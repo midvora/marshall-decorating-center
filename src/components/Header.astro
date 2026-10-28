@@ -1,0 +1,316 @@
+---
+import { site } from '../data/site';
+const links = [
+  { href: '#explore', label: 'Explore' },
+  { href: '#approach', label: 'Our approach' },
+  { href: '#visit', label: 'Visit' },
+];
+---
+
+<div class="chrome-slot">
+<header class="chrome" data-chrome>
+  <div class="banner" role="note" aria-label="Concept notice">
+    <p class="container">
+      <strong>Unofficial concept by Midvora.</strong>
+      <span class="long">
+        This is a design sample, not Marshall Decorating Center's current website. Details should be confirmed with the
+        business.
+      </span>
+      <span class="short">Design sample, not the store's website.</span>
+    </p>
+  </div>
+
+  <div class="bar container">
+    <a class="wordmark" href="#top" aria-label="Marshall Decorating Center, back to top">
+      <span class="glyph" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="wm">
+        <span class="wm-1">Marshall</span>
+        <span class="wm-2">Decorating Center</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <a class="btn btn--sm cta" href="#visit">Plan a visit</a>
+
+    <details class="menu" data-menu>
+      <summary aria-label="Menu">
+        <span class="bars" aria-hidden="true"><i></i><i></i></span>
+        <span class="menu-label">Menu</span>
+      </summary>
+      <div class="sheet">
+        <nav aria-label="Mobile">
+          {links.map((l) => <a href={l.href}>{l.label}</a>)}
+        </nav>
+        <p class="sheet-meta">
+          {site.street}<br />
+          {site.cityLine}<br />
+          <a href={site.phoneHref}>{site.phoneDisplay}</a>
+        </p>
+      </div>
+    </details>
+  </div>
+</header>
+</div>
+
+<style>
+  /* No JS: a plain sticky header. With JS: fixed, with a slot that holds the full height
+     so the header can compact on scroll without shifting the page. */
+  :global(.js) .chrome-slot {
+    min-height: var(--chrome-full, 112px);
+  }
+  .chrome {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: color-mix(in srgb, var(--porcelain) 88%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  }
+
+  :global(.js) .chrome {
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+  :global(.measuring) * {
+    transition: none !important;
+  }
+
+  .banner {
+    background: var(--ink);
+    color: var(--porcelain);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+  .banner p {
+    padding-block: 8px;
+    text-align: center;
+  }
+  .banner strong {
+    font-weight: 600;
+    color: var(--wheat);
+  }
+  .short {
+    display: none;
+  }
+  [data-compact] .long {
+    display: none;
+  }
+  [data-compact] .short {
+    display: inline;
+  }
+  [data-compact] .banner p {
+    padding-block: 5px;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 68px;
+    transition: min-height 0.3s var(--ease);
+  }
+  [data-compact] .bar {
+    min-height: 58px;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    margin-right: auto;
+  }
+  .glyph {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    flex: none;
+  }
+  .glyph i {
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    width: 8px;
+    height: 26px;
+    margin-left: -4px;
+    border-radius: 2px;
+    transform-origin: 50% 100%;
+    transition: transform 0.5s var(--ease);
+  }
+  .glyph i:nth-child(1) {
+    background: var(--sage);
+    transform: rotate(-30deg);
+  }
+  .glyph i:nth-child(2) {
+    background: var(--wheat);
+  }
+  .glyph i:nth-child(3) {
+    background: var(--clay);
+    transform: rotate(30deg);
+  }
+  .wordmark:hover .glyph i:nth-child(1) {
+    transform: rotate(-46deg);
+  }
+  .wordmark:hover .glyph i:nth-child(3) {
+    transform: rotate(46deg);
+  }
+  .wm {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+  .wm-1 {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 560;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+  .wm-2 {
+    margin-top: 3px;
+    font-family: var(--f-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .nav {
+    display: none;
+    gap: 6px;
+  }
+  .nav a {
+    position: relative;
+    padding: 10px 14px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+  .nav a::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 6px;
+    height: 2px;
+    background: var(--clay);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease);
+  }
+  .nav a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .cta {
+    display: none;
+  }
+
+  /* mobile menu: native <details>, works without JS */
+  .menu summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1.5px solid color-mix(in srgb, var(--ink) 55%, transparent);
+    border-radius: 999px;
+    list-style: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .bars {
+    position: relative;
+    width: 16px;
+    height: 10px;
+  }
+  .bars i {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform 0.35s var(--ease), top 0.35s var(--ease);
+  }
+  .bars i:nth-child(1) {
+    top: 0;
+  }
+  .bars i:nth-child(2) {
+    top: 8px;
+  }
+  .menu[open] .bars i:nth-child(1) {
+    top: 4px;
+    transform: rotate(45deg);
+  }
+  .menu[open] .bars i:nth-child(2) {
+    top: 4px;
+    transform: rotate(-45deg);
+  }
+  .sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    max-height: calc(100dvh - var(--chrome-h, 88px));
+    overflow-y: auto;
+    padding: 28px var(--gutter) 36px;
+    background: var(--porcelain);
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    box-shadow: 0 30px 60px -30px rgb(34 44 42 / 0.35);
+  }
+  .sheet nav {
+    display: grid;
+  }
+  .sheet nav a {
+    padding: 14px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+  .sheet-meta {
+    margin-top: 24px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  @media (min-width: 900px) {
+    .nav {
+      display: flex;
+    }
+    .cta {
+      display: inline-flex;
+    }
+    .menu {
+      display: none;
+    }
+    .bar {
+      min-height: 76px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .wm-2 {
+      letter-spacing: 0.12em;
+    }
+    .menu-label {
+      display: none;
+    }
+    .menu summary {
+      padding: 0 14px;
+    }
+  }
+</style>

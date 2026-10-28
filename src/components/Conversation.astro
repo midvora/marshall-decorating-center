@@ -1,0 +1,499 @@
+---
+import { walls, starter } from '../data/palette';
+
+const data = {
+  walls: Object.fromEntries(walls.map((w) => [w.id, { name: w.name, hex: w.hex }])),
+  rooms: starter.rooms,
+  moods: starter.moods,
+  lights: starter.lights,
+};
+
+const bring = [
+  { key: 'photo', label: 'A photo', note: 'of the room as it is today' },
+  { key: 'chip', label: 'A paint chip', note: 'or a fabric you love' },
+  { key: 'idea', label: 'Just an idea', note: 'we will start from there' },
+];
+---
+
+<section class="approach on-dark" id="approach" aria-labelledby="approach-h" tabindex="-1">
+  <div class="bg" aria-hidden="true">
+    <span class="arch"></span>
+    <span class="glow g1"></span>
+    <span class="glow g2"></span>
+  </div>
+
+  <div class="container grid">
+    <div class="intro">
+      <p class="eyebrow" data-reveal>Our approach</p>
+      <h2 id="approach-h" class="display" data-split>Better spaces start with <em>better questions.</em></h2>
+      <p class="lede" data-reveal>
+        Bring a photo, a paint chip or just an idea. We'll start with what you're working on and help you explore the
+        possibilities in store.
+      </p>
+
+      <ul class="bring" data-reveal>
+        {
+          bring.map((b) => (
+            <li>
+              <span class="ico" aria-hidden="true">
+                {b.key === 'photo' && (
+                  <svg viewBox="0 0 80 80">
+                    <g transform="rotate(-7 40 40)">
+                      <rect x="12" y="8" width="56" height="64" rx="3" fill="#f7f4ee" />
+                      <rect x="17" y="13" width="46" height="42" fill="#cadbe2" />
+                      <circle cx="49" cy="26" r="6" fill="#fff3c4" />
+                      <path d="M17 49 Q 31 34 43 44 T 63 40 V55 H17Z" fill="#8fa086" />
+                      <rect x="24" y="61" width="26" height="3" rx="1.5" fill="#cfc9bd" />
+                    </g>
+                    <rect x="27" y="2" width="26" height="10" rx="1" fill="#ddb968" opacity="0.85" transform="rotate(-5 40 7)" />
+                  </svg>
+                )}
+                {b.key === 'chip' && (
+                  <svg viewBox="0 0 80 80">
+                    <g transform="rotate(8 40 40)">
+                      <rect x="24" y="6" width="32" height="68" rx="3" fill="#fff" />
+                      <path d="M24 24 V9 a3 3 0 0 1 3 -3 h26 a3 3 0 0 1 3 3 V24Z" fill="#e3b6a3" />
+                      <rect x="24" y="24" width="32" height="16" fill="#c58468" />
+                      <rect x="24" y="40" width="32" height="16" fill="#9f5e45" />
+                      <circle cx="40" cy="65" r="3.2" fill="#e8ded0" stroke="#bfb6a4" />
+                    </g>
+                  </svg>
+                )}
+                {b.key === 'idea' && (
+                  <svg viewBox="0 0 80 80">
+                    <path d="M40 12 C 27 12, 20 22, 22 33 C 23 40, 30 44, 31 51 H49 C 50 44, 57 40, 58 33 C 60 22, 53 12, 40 12Z" fill="#ddb968" />
+                    <rect x="31" y="54" width="18" height="5" rx="2.5" fill="#f7f4ee" />
+                    <rect x="34" y="61" width="12" height="5" rx="2.5" fill="#f7f4ee" />
+                    <path d="M40 2 V6 M13 14 L16 17 M67 14 L64 17 M6 36 H10 M70 36 H74" stroke="#ddb968" stroke-width="3" stroke-linecap="round" />
+                  </svg>
+                )}
+              </span>
+              <span class="b-txt">
+                <strong>{b.label}</strong>
+                <span>{b.note}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="starter" data-starter data-reveal aria-labelledby="starter-h">
+      <div class="s-top">
+        <p class="eyebrow" id="starter-h">Project starter · three quick questions</p>
+        <ol class="dots" aria-hidden="true">
+          <li data-dot class="on"></li>
+          <li data-dot></li>
+          <li data-dot></li>
+        </ol>
+      </div>
+
+      <div class="s-body">
+        <section class="step" data-step="0">
+          <h3 class="q" tabindex="-1">Which room are we talking about?</h3>
+          <div class="opts">
+            {starter.rooms.map((r) => <button type="button" class="opt" data-pick="room" data-value={r.id}>{r.label}</button>)}
+          </div>
+        </section>
+
+        <section class="step" data-step="1" hidden>
+          <h3 class="q" tabindex="-1">What should it feel like?</h3>
+          <div class="opts">
+            {starter.moods.map((m) => <button type="button" class="opt" data-pick="mood" data-value={m.id}>{m.label}</button>)}
+          </div>
+        </section>
+
+        <section class="step" data-step="2" hidden>
+          <h3 class="q" tabindex="-1">How much daylight does it get?</h3>
+          <div class="opts">
+            {starter.lights.map((l) => <button type="button" class="opt" data-pick="light" data-value={l.id}>{l.label}</button>)}
+          </div>
+        </section>
+
+        <section class="step result" data-step="3" hidden>
+          <h3 class="q" tabindex="-1">Your starting point</h3>
+          <p class="r-line" data-r-line></p>
+          <ul class="r-chips" data-r-chips></ul>
+          <div class="r-cols">
+            <div>
+              <p class="r-k">Bring with you</p>
+              <ul class="r-list" data-r-bring></ul>
+            </div>
+            <div>
+              <p class="r-k">Ask about</p>
+              <p class="r-ask" data-r-ask></p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="s-foot">
+        <button type="button" class="link" data-back hidden>← Back</button>
+        <button type="button" class="link" data-restart hidden>Start over</button>
+        <a class="btn btn--light btn--sm" data-plan href="#visit" hidden>Plan a store visit <span class="arr" aria-hidden="true">→</span></a>
+        <p class="fine" data-fine>Nothing here is sent anywhere. It is just a way to arrive with a plan.</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="starter-data" set:html={JSON.stringify(data)} />
+</section>
+
+<style>
+  .approach {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    background: var(--pine);
+    color: var(--porcelain);
+    padding-block: clamp(80px, 11vw, 160px);
+    outline: none;
+  }
+  .bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .arch {
+    position: absolute;
+    right: -6%;
+    top: 8%;
+    width: min(60vw, 700px);
+    aspect-ratio: 0.7;
+    border: 1.5px solid rgb(247 244 238 / 0.14);
+    border-radius: 999px 999px 0 0;
+  }
+  .arch::after {
+    content: '';
+    position: absolute;
+    inset: 22px;
+    border: 1.5px solid rgb(247 244 238 / 0.08);
+    border-radius: inherit;
+  }
+  .glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.5;
+  }
+  .g1 {
+    left: -8%;
+    top: 10%;
+    width: 38vw;
+    aspect-ratio: 1;
+    background: #b47962;
+    opacity: 0.22;
+  }
+  .g2 {
+    right: 4%;
+    bottom: -12%;
+    width: 36vw;
+    aspect-ratio: 1;
+    background: #7f927e;
+    opacity: 0.28;
+  }
+
+  .grid {
+    display: grid;
+    gap: clamp(48px, 7vw, 80px);
+    align-items: center;
+  }
+  @media (min-width: 1020px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+      gap: clamp(48px, 6vw, 100px);
+    }
+  }
+
+  .intro {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+  .intro .eyebrow {
+    color: #c9d3cd;
+  }
+  .intro h2 {
+    font-size: clamp(2.6rem, 1rem + 5.6vw, 5.8rem);
+  }
+  .intro h2 em {
+    color: var(--wheat);
+  }
+  .intro .lede {
+    color: #d6ddd8;
+  }
+
+  .bring {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    width: 100%;
+    max-width: 560px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .bring li {
+    display: grid;
+    gap: 10px;
+    padding: 16px 14px 18px;
+    border: 1px solid rgb(247 244 238 / 0.16);
+    border-radius: 18px;
+    background: rgb(247 244 238 / 0.04);
+    transition: transform 0.5s var(--ease), background 0.5s var(--ease);
+  }
+  .bring li:hover {
+    transform: translateY(-5px) rotate(-1deg);
+    background: rgb(247 244 238 / 0.09);
+  }
+  .ico {
+    width: 58px;
+    height: 58px;
+  }
+  .b-txt {
+    display: grid;
+    gap: 2px;
+    line-height: 1.3;
+  }
+  .b-txt strong {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-size: 1.125rem;
+    font-weight: 520;
+  }
+  .b-txt span {
+    font-size: 0.8125rem;
+    color: #c9d3cd;
+  }
+
+  /* starter card: only exists when JS is on */
+  .starter {
+    display: none;
+    position: relative;
+    padding: clamp(22px, 3vw, 36px);
+    border-radius: 26px;
+    background: var(--porcelain);
+    color: var(--ink);
+    box-shadow: 0 50px 90px -40px rgb(0 0 0 / 0.7);
+    min-height: 420px;
+    flex-direction: column;
+  }
+  :global(.js) .starter {
+    display: flex;
+  }
+  .s-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .dots {
+    display: flex;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .dots li {
+    width: 22px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--cream);
+    transition: background 0.4s var(--ease), width 0.4s var(--ease);
+  }
+  .dots li.on {
+    background: var(--clay);
+    width: 34px;
+  }
+  .s-body {
+    flex: 1;
+    padding-block: 26px 22px;
+  }
+  .step[hidden] {
+    display: none;
+  }
+  .q {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 440;
+    font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    outline: none;
+  }
+  .opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .opt {
+    min-height: 50px;
+    padding: 0 22px;
+    border: 1.5px solid color-mix(in srgb, var(--ink) 30%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition:
+      background 0.3s var(--ease),
+      color 0.3s var(--ease),
+      transform 0.3s var(--ease),
+      border-color 0.3s var(--ease);
+  }
+  .opt:hover {
+    background: var(--ink);
+    color: var(--porcelain);
+    border-color: var(--ink);
+    transform: translateY(-2px);
+  }
+  .opt:focus-visible {
+    outline: 3px solid var(--clay-deep);
+    outline-offset: 3px;
+  }
+
+  .r-line {
+    margin-top: 10px;
+    color: var(--ink-soft);
+  }
+  .r-chips {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .r-chips :global(li) {
+    flex: 1;
+    min-width: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 14px 24px -14px rgb(34 44 42 / 0.5), 0 0 0 1px rgb(34 44 42 / 0.08);
+    animation: chipin 0.7s var(--ease) both;
+  }
+  .r-chips :global(li:nth-child(2)) {
+    animation-delay: 0.1s;
+  }
+  .r-chips :global(li:nth-child(3)) {
+    animation-delay: 0.2s;
+  }
+  .r-chips :global(.sw) {
+    display: block;
+    height: 64px;
+  }
+  .r-chips :global(.nm) {
+    display: block;
+    padding: 8px 10px 10px;
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-weight: 540;
+    font-size: 0.9375rem;
+    line-height: 1.15;
+  }
+  @keyframes chipin {
+    from {
+      opacity: 0;
+      transform: translateY(14px) rotate(-3deg);
+    }
+  }
+  .r-cols {
+    display: grid;
+    gap: 18px 28px;
+    margin-top: 22px;
+  }
+  @media (min-width: 560px) {
+    .r-cols {
+      grid-template-columns: 1.15fr 1fr;
+    }
+  }
+  .r-k {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .r-list {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+    font-size: 0.9375rem;
+  }
+  .r-list :global(li) {
+    position: relative;
+    padding-left: 22px;
+  }
+  .r-list :global(li)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 12px;
+    height: 7px;
+    border-left: 2.5px solid var(--sage-deep);
+    border-bottom: 2.5px solid var(--sage-deep);
+    transform: rotate(-45deg) scale(0.8);
+  }
+  .r-ask {
+    margin-top: 8px;
+    font-size: 0.9375rem;
+  }
+
+  .s-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 18px;
+    min-height: 48px;
+  }
+  .s-foot [hidden] {
+    display: none !important;
+  }
+  .link {
+    padding: 8px 2px;
+    border: 0;
+    background: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--clay-deep);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .starter .btn--light {
+    --btn-bg: var(--ink);
+    --btn-fg: var(--porcelain);
+    --btn-sweep: var(--clay-deep);
+  }
+  .starter .btn--light:hover {
+    color: var(--porcelain);
+  }
+  .fine {
+    margin-left: auto;
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+  .starter :focus-visible {
+    outline-color: var(--clay-deep);
+  }
+
+  @media (max-width: 520px) {
+    .bring {
+      grid-template-columns: 1fr;
+    }
+    .bring li {
+      grid-template-columns: 58px 1fr;
+      align-items: center;
+      gap: 14px;
+    }
+    .fine {
+      margin-left: 0;
+    }
+  }
+</style>

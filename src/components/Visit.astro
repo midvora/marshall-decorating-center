@@ -1,0 +1,318 @@
+---
+import { site } from '../data/site';
+---
+
+<section class="visit on-dark" id="visit" aria-labelledby="visit-h" tabindex="-1">
+  <div class="container grid">
+    <div class="info">
+      <p class="eyebrow" data-reveal>Visit</p>
+      <h2 id="visit-h" class="display" data-split>Come see what <em>works in person.</em></h2>
+
+      <address class="addr" data-reveal>
+        <span class="k">Find us</span>
+        <span class="a1">{site.street}</span>
+        <span class="a2">{site.cityLine}</span>
+        <span class="k k2">Call</span>
+        <a class="ph" href={site.phoneHref}>{site.phoneDisplay}</a>
+        <span class="k k2">Hours</span>
+        <span class="hrs">{site.hoursNote}</span>
+      </address>
+
+      <div class="actions" data-reveal>
+        <a class="btn btn--light" href={site.directionsHref} target="_blank" rel="noopener noreferrer">
+          Get directions <span class="sr-only">(opens in a new tab)</span><span class="arr" aria-hidden="true">↗</span>
+        </a>
+        <a class="btn btn--ghost-light" href={site.phoneHref}>Call the store</a>
+      </div>
+
+      <p class="bring-note" data-reveal>Bring a photo, a paint chip or just an idea.</p>
+    </div>
+
+    <div class="mapcard" data-reveal>
+      <div class="map" aria-hidden="true">
+        <svg viewBox="0 0 520 460" preserveAspectRatio="xMidYMid slice">
+          <rect width="520" height="460" fill="#fbf8f1" />
+          <!-- blocks -->
+          <g fill="#e6dac4">
+            <rect x="14" y="14" width="96" height="76" rx="4" />
+            <rect x="122" y="14" width="120" height="76" rx="4" />
+            <rect x="254" y="14" width="104" height="76" rx="4" />
+            <rect x="370" y="14" width="136" height="76" rx="4" />
+            <rect x="14" y="102" width="96" height="62" rx="4" />
+            <rect x="122" y="102" width="120" height="62" rx="4" />
+            <rect x="254" y="102" width="104" height="62" rx="4" />
+            <rect x="370" y="102" width="136" height="62" rx="4" />
+            <rect x="14" y="292" width="96" height="62" rx="4" />
+            <rect x="122" y="292" width="120" height="62" rx="4" />
+            <rect x="254" y="292" width="104" height="62" rx="4" />
+            <rect x="370" y="292" width="136" height="62" rx="4" />
+            <rect x="14" y="366" width="96" height="80" rx="4" />
+            <rect x="122" y="366" width="120" height="80" rx="4" />
+            <rect x="370" y="366" width="136" height="80" rx="4" />
+          </g>
+          <rect x="254" y="366" width="104" height="80" rx="4" fill="#cdd9c3" />
+          <g fill="#a9bd9a">
+            <circle cx="278" cy="392" r="9" />
+            <circle cx="304" cy="410" r="11" />
+            <circle cx="334" cy="390" r="8" />
+            <circle cx="320" cy="428" r="8" />
+          </g>
+          <!-- main street -->
+          <rect x="0" y="176" width="520" height="104" fill="#efe5d2" />
+          <rect x="0" y="198" width="520" height="60" fill="#fff" />
+          <path d="M0 228 H520" stroke="#ddb968" stroke-width="3" stroke-dasharray="16 12" />
+          <rect x="0" y="198" width="520" height="3" fill="#d9ceb9" />
+          <rect x="0" y="255" width="520" height="3" fill="#d9ceb9" />
+          <!-- store lot -->
+          <rect x="244" y="150" width="62" height="38" rx="3" fill="#b47962" />
+        </svg>
+        <span class="street">W Main St</span>
+        <span class="pin">
+          <span class="pulse"></span>
+          <svg viewBox="0 0 40 52" width="40" height="52"
+            ><path d="M20 50 C 6 34, 2 26, 2 18 a18 18 0 0 1 36 0 c0 8 -4 16 -18 32Z" fill="#8a4e39" /><circle cx="20" cy="18" r="7" fill="#f7f4ee" /></svg
+          >
+        </span>
+        <p class="callout">
+          <strong>Marshall Decorating Center</strong>
+          <span>{site.address}</span>
+        </p>
+        <p class="note">Illustrative map, not to scale</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .visit {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    background: var(--clay-deep);
+    color: var(--porcelain);
+    padding-block: clamp(72px, 9vw, 130px);
+    outline: none;
+  }
+  .visit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(60% 60% at 90% 0%, rgb(221 185 104 / 0.28), transparent 70%),
+      radial-gradient(50% 50% at 0% 100%, rgb(0 0 0 / 0.25), transparent 70%);
+  }
+  .grid {
+    display: grid;
+    gap: clamp(44px, 6vw, 80px);
+    align-items: center;
+  }
+  @media (min-width: 1020px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+      gap: clamp(48px, 6vw, 110px);
+    }
+  }
+
+  .info {
+    display: grid;
+    gap: 26px;
+    justify-items: start;
+  }
+  .info .eyebrow {
+    color: #f1dccf;
+  }
+  .info h2 {
+    font-size: clamp(2.6rem, 1rem + 5.8vw, 6rem);
+  }
+  .info h2 em {
+    color: var(--wheat);
+  }
+
+  .addr {
+    display: grid;
+    font-style: normal;
+    gap: 2px;
+  }
+  .k {
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #f1dccf;
+  }
+  .k2 {
+    margin-top: 18px;
+  }
+  .a1,
+  .a2,
+  .ph {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-size: clamp(1.7rem, 1.2rem + 1.8vw, 2.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    font-weight: 440;
+  }
+  .a1 {
+    margin-top: 6px;
+  }
+  .ph {
+    margin-top: 6px;
+    width: fit-content;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    text-decoration-color: rgb(247 244 238 / 0.45);
+    transition: text-decoration-color 0.3s var(--ease);
+  }
+  .ph:hover {
+    text-decoration-color: var(--wheat);
+  }
+  .hrs {
+    margin-top: 6px;
+    font-size: 1.0625rem;
+    color: #f7ece4;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  .bring-note {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-variation-settings: 'opsz' 36;
+    font-size: 1.25rem;
+    color: #f7ece4;
+  }
+
+  .mapcard {
+    padding: clamp(8px, 1.2vw, 14px);
+    border-radius: var(--radius);
+    background: var(--paper);
+    box-shadow: 0 50px 90px -40px rgb(0 0 0 / 0.65);
+    transform: rotate(1.2deg);
+  }
+  .map {
+    position: relative;
+    aspect-ratio: 520 / 460;
+    border-radius: calc(var(--radius) - 10px);
+    overflow: hidden;
+    color: var(--ink);
+  }
+  .map svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .street {
+    position: absolute;
+    left: 6%;
+    top: 49.4%;
+    font-family: var(--f-mono);
+    font-size: clamp(0.625rem, 0.4rem + 0.7vw, 0.8125rem);
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #8c826f;
+  }
+  .pin {
+    position: absolute;
+    left: 52.3%;
+    top: 24%;
+    width: 40px;
+    height: 52px;
+    margin-left: -20px;
+    transform-origin: 50% 100%;
+    animation: drop 1s var(--ease) 0.5s both;
+  }
+  .pin svg {
+    position: relative;
+    z-index: 1;
+    width: clamp(30px, 3.2vw, 40px);
+    height: auto;
+  }
+  .pulse {
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 46px;
+    height: 16px;
+    margin-left: -23px;
+    border-radius: 50%;
+    background: rgb(138 78 57 / 0.35);
+    animation: pulse 2.4s ease-out infinite;
+  }
+  .callout {
+    position: absolute;
+    left: 8%;
+    top: 7%;
+    display: grid;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 16px 30px -14px rgb(34 44 42 / 0.5);
+    line-height: 1.3;
+  }
+  .callout strong {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-weight: 560;
+    font-size: clamp(0.9375rem, 0.7rem + 0.8vw, 1.125rem);
+  }
+  .callout span {
+    font-size: clamp(0.75rem, 0.6rem + 0.5vw, 0.875rem);
+    color: var(--ink-soft);
+  }
+  .note {
+    position: absolute;
+    right: 14px;
+    bottom: 10px;
+    font-size: 0.6875rem;
+    color: #7c735f;
+  }
+
+  @keyframes drop {
+    from {
+      opacity: 0;
+      transform: translateY(-40px) scaleY(1.2);
+    }
+    60% {
+      transform: translateY(4px) scaleY(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes pulse {
+    0% {
+      transform: scale(0.5);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pin,
+    .pulse {
+      animation: none;
+    }
+  }
+  @media (max-width: 520px) {
+    .mapcard {
+      transform: none;
+    }
+    .callout {
+      left: 5%;
+      top: 5%;
+    }
+  }
+</style>

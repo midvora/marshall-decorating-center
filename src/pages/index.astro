@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Marquee from '../components/Marquee.astro';
+import Categories from '../components/Categories.astro';
+import Conversation from '../components/Conversation.astro';
+import Seasons from '../components/Seasons.astro';
+import Visit from '../components/Visit.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+---
+
+<Base
+  title="Marshall Decorating Center | Unofficial design concept by Midvora"
+  description="An unofficial design concept for Marshall Decorating Center in Marshall, Minnesota. A design sample, not the store's current website."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <Hero />
+    <Marquee />
+    <Categories />
+    <Conversation />
+    <Seasons />
+    <Visit />
+  </main>
+  <Footer />
+  <MobileBar />
+</Base>

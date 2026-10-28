@@ -1,0 +1,100 @@
+---
+import { site } from '../data/site';
+---
+
+<footer class="foot on-dark">
+  <div class="ribbon" aria-hidden="true">
+    <i style="background:#7f927e"></i><i style="background:#a8b5a0"></i><i style="background:#ddb968"></i><i
+      style="background:#c58468"></i
+    ><i style="background:#b47962"></i><i style="background:#9db7c6"></i><i style="background:#46575a"></i>
+  </div>
+  <div class="container inner">
+    <div class="who">
+      <p class="name">{site.name}</p>
+      <p class="addr">
+        {site.address}<br />
+        <a href={site.phoneHref}>{site.phoneDisplay}</a>
+      </p>
+    </div>
+
+    <nav class="links" aria-label="Footer">
+      <a href="#explore">Explore</a>
+      <a href="#approach">Our approach</a>
+      <a href="#visit">Visit</a>
+      <a href="#top">Back to top ↑</a>
+    </nav>
+
+    <div class="legal">
+      <p>
+        <strong>Unofficial concept by Midvora.</strong> This is a design sample, not {site.name}'s current website.
+        Details should be confirmed with the business.
+      </p>
+      <p class="credit">Concept created by Midvora</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    background: var(--ink);
+    color: var(--porcelain);
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  }
+  .inner {
+    display: grid;
+    gap: 36px 48px;
+    padding-top: clamp(40px, 6vw, 72px);
+  }
+  @media (min-width: 900px) {
+    .inner {
+      grid-template-columns: 1.1fr 0.8fr 1.3fr;
+      align-items: start;
+    }
+  }
+  .name {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  .addr {
+    margin-top: 12px;
+    color: #cdd5d0;
+    line-height: 1.7;
+  }
+  .addr a,
+  .links a {
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat;
+    transition: background-size 0.45s var(--ease);
+  }
+  .addr a:hover,
+  .links a:hover {
+    background-size: 100% 1.5px;
+  }
+  .links {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+    font-weight: 500;
+  }
+  .legal {
+    display: grid;
+    gap: 12px;
+    color: #cdd5d0;
+    font-size: 0.9375rem;
+    max-width: 38em;
+  }
+  .legal strong {
+    color: var(--wheat);
+    font-weight: 600;
+  }
+  .credit {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #9fa9a4;
+  }
+</style>

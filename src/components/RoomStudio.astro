@@ -1,0 +1,693 @@
+---
+import { walls, floors, textiles, defaults } from '../data/palette';
+
+/* deterministic pseudo random so builds are stable */
+function rng(seed: number) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const wallDefault = walls.find((w) => w.id === defaults.wall)!;
+const floorDefault = floors.find((f) => f.id === defaults.floor)!;
+const textileDefault = textiles.find((t) => t.id === defaults.textile)!;
+
+/* plank pattern: 3 staggered rows, 120 long planks, wraps seamlessly */
+function plankPattern(id: string, tones: string[], seed: number) {
+  const r = rng(seed);
+  const W = 240;
+  const rowH = 20;
+  const offsets = [0, 46, 88];
+  const parts: string[] = [];
+  let n = 0;
+  offsets.forEach((o, row) => {
+    for (let k = -1; k <= 2; k++) {
+      const x = o + k * 120;
+      const tone = tones[n++ % tones.length];
+      const y = row * rowH;
+      parts.push(`<rect x="${x}" y="${y}" width="120" height="${rowH}" fill="${tone}"/>`);
+      const shade = r() > 0.5 ? 'rgb(255 255 255 / 0.10)' : 'rgb(0 0 0 / 0.07)';
+      parts.push(`<rect x="${x}" y="${y}" width="120" height="${rowH}" fill="${shade}"/>`);
+      for (let g = 0; g < 2; g++) {
+        const gy = y + 4 + r() * 12;
+        const gx = x + 6 + r() * 40;
+        parts.push(
+          `<path d="M${gx.toFixed(1)} ${gy.toFixed(1)} q 30 ${(r() * 3 - 1.5).toFixed(1)} ${(40 + r() * 40).toFixed(0)} 0" stroke="rgb(0 0 0 / 0.13)" stroke-width="0.8" fill="none"/>`,
+        );
+      }
+      parts.push(`<path d="M${x} ${y + rowH} h120 M${x + 120} ${y} v${rowH}" stroke="rgb(0 0 0 / 0.30)" stroke-width="1" fill="none"/>`);
+    }
+  });
+  return `<pattern id="${id}" width="${W}" height="${rowH * 3}" patternUnits="userSpaceOnUse">${parts.join('')}</pattern>`;
+}
+
+/* chevron pattern */
+function chevronPattern(id: string, tones: string[]) {
+  const hw = 36;
+  const t = 14;
+  const rise = 18;
+  const parts: string[] = [];
+  for (let k = 0; k <= 2; k++) {
+    const y = k * t;
+    const a = `${0},${y} ${hw},${y - rise} ${hw},${y - rise + t} ${0},${y + t}`;
+    const b = `${hw},${y - rise} ${hw * 2},${y} ${hw * 2},${y + t} ${hw},${y - rise + t}`;
+    parts.push(`<polygon points="${a}" fill="${tones[k % 2]}" stroke="rgb(0 0 0 / 0.20)" stroke-width="0.8"/>`);
+    parts.push(`<polygon points="${b}" fill="${tones[(k + 1) % 2]}" stroke="rgb(0 0 0 / 0.20)" stroke-width="0.8"/>`);
+  }
+  return `<pattern id="${id}" width="${hw * 2}" height="${t}" patternUnits="userSpaceOnUse">${parts.join('')}</pattern>`;
+}
+
+/* stone tile pattern */
+function tilePattern(id: string, tones: string[], seed: number) {
+  const r = rng(seed);
+  const w = 76;
+  const h = 40;
+  const parts: string[] = [];
+  tones.forEach((tone, i) => {
+    const x = (i % 2) * w;
+    const y = Math.floor(i / 2) * h;
+    parts.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${tone}"/>`);
+    for (let s = 0; s < 6; s++) {
+      parts.push(
+        `<circle cx="${(x + 4 + r() * (w - 8)).toFixed(1)}" cy="${(y + 3 + r() * (h - 6)).toFixed(1)}" r="${(0.6 + r() * 1.1).toFixed(2)}" fill="rgb(0 0 0 / 0.10)"/>`,
+      );
+    }
+  });
+  parts.push(`<path d="M0 0H${w * 2}M0 ${h}H${w * 2}M0 ${h * 2}H${w * 2}M0 0V${h * 2}M${w} 0V${h * 2}M${w * 2} 0V${h * 2}" stroke="rgb(50 46 38 / 0.38)" stroke-width="1.6" fill="none"/>`);
+  return `<pattern id="${id}" width="${w * 2}" height="${h * 2}" patternUnits="userSpaceOnUse">${parts.join('')}</pattern>`;
+}
+
+const floorDefs = floors
+  .map((f, i) =>
+    f.kind === 'plank'
+      ? plankPattern(`rs-p-${f.id}`, f.tones, 11 + i * 7)
+      : f.kind === 'chevron'
+        ? chevronPattern(`rs-p-${f.id}`, f.tones)
+        : tilePattern(`rs-p-${f.id}`, f.tones, 31 + i),
+  )
+  .join('');
+
+/* plant leaves */
+const leafR = rng(7);
+const leaves = Array.from({ length: 13 }, (_, i) => {
+  const a = -64 + (128 / 12) * i + (leafR() * 8 - 4);
+  const len = 0.7 + leafR() * 0.55;
+  const tone = ['#5E7A55', '#4F6B49', '#6F8C62', '#587452'][i % 4];
+  return { a: a.toFixed(1), len: len.toFixed(2), tone };
+});
+
+function floorPreview(f: (typeof floors)[number]) {
+  const [a, b] = [f.tones[0], f.tones[1] ?? f.tones[0]];
+  if (f.kind === 'plank') return `repeating-linear-gradient(0deg, ${a} 0 6px, ${b} 6px 12px)`;
+  if (f.kind === 'chevron') return `repeating-linear-gradient(135deg, ${a} 0 7px, ${b} 7px 14px)`;
+  return `linear-gradient(90deg, rgb(0 0 0 / .25) 1.5px, transparent 1.5px) 0 0 / 15px 15px, linear-gradient(0deg, rgb(0 0 0 / .25) 1.5px, transparent 1.5px) 0 0 / 15px 15px, ${a}`;
+}
+
+const initialDescription = `A living room with ${wallDefault.name} walls, a ${floorDefault.name} floor and ${textileDefault.name} fabric.`;
+---
+
+<div
+  class="studio"
+  data-studio
+  data-floor={defaults.floor}
+  data-wall={defaults.wall}
+  data-textile={defaults.textile}
+  style={`--textile:${textileDefault.hex}`}
+>
+  <div class="frame">
+    <svg class="room" viewBox="0 0 640 520" role="img" aria-labelledby="rs-title" data-room>
+      <title id="rs-title" data-room-title>{initialDescription}</title>
+      <defs>
+        <linearGradient id="rs-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#b9d6e6"></stop>
+          <stop offset="1" stop-color="#f7ecd2"></stop>
+        </linearGradient>
+        <radialGradient id="rs-glow" cx="150" cy="170" r="430" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#fff8e6" stop-opacity="0.45"></stop>
+          <stop offset="1" stop-color="#fff8e6" stop-opacity="0"></stop>
+        </radialGradient>
+        <linearGradient id="rs-vig" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#000" stop-opacity="0.02"></stop>
+          <stop offset="0.7" stop-color="#000" stop-opacity="0"></stop>
+          <stop offset="1" stop-color="#000" stop-opacity="0.16"></stop>
+        </linearGradient>
+        <linearGradient id="rs-floorshade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#000" stop-opacity="0.34"></stop>
+          <stop offset="0.35" stop-color="#000" stop-opacity="0.06"></stop>
+          <stop offset="1" stop-color="#000" stop-opacity="0.12"></stop>
+        </linearGradient>
+        <linearGradient id="rs-fold" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#000" stop-opacity="0.2"></stop>
+          <stop offset="0.5" stop-color="#fff" stop-opacity="0.14"></stop>
+          <stop offset="1" stop-color="#000" stop-opacity="0.2"></stop>
+        </linearGradient>
+        <pattern id="rs-folds" width="16" height="20" patternUnits="userSpaceOnUse">
+          <rect width="16" height="20" fill="url(#rs-fold)"></rect>
+        </pattern>
+        <radialGradient id="rs-lamp" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#ffe9a8" stop-opacity="0.55"></stop>
+          <stop offset="1" stop-color="#ffe9a8" stop-opacity="0"></stop>
+        </radialGradient>
+        <clipPath id="rs-view"><rect x="74" y="84" width="162" height="202"></rect></clipPath>
+        <clipPath id="rs-art"><rect x="362" y="108" width="116" height="76"></rect></clipPath>
+        <clipPath id="rs-floor-clip"><rect x="0" y="380" width="640" height="140"></rect></clipPath>
+        <filter id="rs-shadow" x="-20%" y="-20%" width="140%" height="150%">
+          <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#000" flood-opacity="0.22"></feDropShadow>
+        </filter>
+        <Fragment set:html={floorDefs} />
+      </defs>
+
+      <!-- walls: base + roller strips -->
+      <rect class="wall" data-wall-base x="0" y="0" width="640" height="382" fill={wallDefault.hex}></rect>
+      <g data-wall-strips>
+        {
+          Array.from({ length: 6 }, (_, i) => (
+            <rect x={i * 106.7} y="0" width="108" height="382" fill={wallDefault.hex} transform-origin={`${i * 106.7 + 54} ${i % 2 ? 382 : 0}`} style="opacity:0"></rect>
+          ))
+        }
+      </g>
+      <rect x="0" y="0" width="640" height="382" fill="url(#rs-glow)"></rect>
+      <rect x="0" y="0" width="640" height="382" fill="url(#rs-vig)"></rect>
+
+      <!-- baseboard -->
+      <rect x="0" y="362" width="640" height="20" fill="#f4efe6"></rect>
+      <rect x="0" y="362" width="640" height="2" fill="#000" opacity="0.08"></rect>
+      <rect x="0" y="380" width="640" height="3" fill="#000" opacity="0.14"></rect>
+
+      <!-- floors -->
+      <g clip-path="url(#rs-floor-clip)">
+        {floors.map((f) => <rect class={`floor fl-${f.id}`} x="0" y="382" width="640" height="140" fill={`url(#rs-p-${f.id})`}></rect>)}
+        <rect x="0" y="382" width="640" height="140" fill="url(#rs-floorshade)"></rect>
+        <polygon class="sunpatch" points="64,382 238,382 420,520 168,520" fill="#fff4d2"></polygon>
+      </g>
+
+      <!-- window -->
+      <g>
+        <rect x="52" y="296" width="206" height="12" rx="3" fill="#efe8da" filter="url(#rs-shadow)"></rect>
+        <rect x="62" y="72" width="186" height="226" rx="4" fill="#f6f2ea" stroke="#d9cfbd"></rect>
+        <g clip-path="url(#rs-view)">
+          <rect x="74" y="84" width="162" height="202" fill="url(#rs-sky)"></rect>
+          <circle cx="112" cy="124" r="30" fill="#fff3c4" opacity="0.5"></circle>
+          <circle cx="112" cy="124" r="15" fill="#fff6d2"></circle>
+          <ellipse cx="190" cy="112" rx="26" ry="8" fill="#fff" opacity="0.75"></ellipse>
+          <ellipse cx="204" cy="106" rx="16" ry="7" fill="#fff" opacity="0.75"></ellipse>
+          <path d="M74 236 Q 120 214 160 230 T 236 220 V 286 H 74Z" fill="#b6c49a"></path>
+          <path d="M74 252 Q 130 232 176 248 T 236 242 V 286 H 74Z" fill="#9db27f"></path>
+          <path d="M74 268 Q 120 256 170 266 T 236 262 V 286 H 74Z" fill="#7f9a66"></path>
+          <g>
+            <path d="M186 252 L 189 160 L 192 252Z" fill="#f1eee6"></path>
+            <g class="blades">
+              <path d="M189 160 L 187.4 124 L 190.6 124Z" fill="#f7f5ee"></path>
+              <path d="M189 160 L 220 178 L 218 181Z" fill="#f7f5ee"></path>
+              <path d="M189 160 L 158 178 L 160 181Z" fill="#f7f5ee"></path>
+              <circle cx="189" cy="160" r="3" fill="#e4dfd2"></circle>
+            </g>
+          </g>
+        </g>
+        <rect x="152" y="84" width="6" height="202" fill="#f6f2ea"></rect>
+        <rect x="74" y="182" width="162" height="6" fill="#f6f2ea"></rect>
+      </g>
+
+      <!-- curtains -->
+      <g>
+        <path class="tx" d="M44 66 H110 L114 358 Q 78 368 46 358Z"></path>
+        <path d="M44 66 H110 L114 358 Q 78 368 46 358Z" fill="url(#rs-folds)"></path>
+        <path class="tx" d="M200 66 H266 L268 358 Q 234 368 198 358Z"></path>
+        <path d="M200 66 H266 L268 358 Q 234 368 198 358Z" fill="url(#rs-folds)"></path>
+        <path d="M110 66 L114 358" stroke="#000" stroke-opacity="0.18" stroke-width="2" fill="none"></path>
+        <path d="M200 66 L198 358" stroke="#000" stroke-opacity="0.18" stroke-width="2" fill="none"></path>
+        <rect x="34" y="56" width="242" height="6" rx="3" fill="#3b3833"></rect>
+        <circle cx="34" cy="59" r="7" fill="#3b3833"></circle>
+        <circle cx="276" cy="59" r="7" fill="#3b3833"></circle>
+      </g>
+
+      <!-- art -->
+      <g filter="url(#rs-shadow)">
+        <rect x="340" y="86" width="160" height="120" rx="3" fill="#c8a86a"></rect>
+        <rect x="348" y="94" width="144" height="104" fill="#f4eee2"></rect>
+        <rect x="362" y="108" width="116" height="76" fill="#f0e4d0"></rect>
+      </g>
+      <g clip-path="url(#rs-art)">
+        <circle cx="448" cy="130" r="11" fill="#ddb968"></circle>
+        <path d="M362 170 Q 392 140 424 158 T 478 148 V 184 H 362Z" fill="#b47962"></path>
+        <path d="M362 178 Q 402 156 440 170 T 478 166 V 184 H 362Z" fill="#7f927e"></path>
+      </g>
+
+      <!-- rug and coffee table -->
+      <ellipse cx="404" cy="458" rx="232" ry="50" fill="#000" opacity="0.14"></ellipse>
+      <ellipse cx="404" cy="452" rx="232" ry="48" fill="#efe6d6"></ellipse>
+      <ellipse class="tx-stroke" cx="404" cy="452" rx="214" ry="40" fill="none" stroke-width="6"></ellipse>
+      <ellipse cx="404" cy="452" rx="198" ry="34" fill="none" stroke="#c9b99b" stroke-width="1.4" stroke-dasharray="2 5"></ellipse>
+
+      <!-- sofa -->
+      <ellipse cx="424" cy="376" rx="158" ry="9" fill="#000" opacity="0.2"></ellipse>
+      <g filter="url(#rs-shadow)">
+        <rect x="312" y="236" width="226" height="86" rx="26" fill="#8e8071"></rect>
+        <rect x="288" y="262" width="42" height="102" rx="20" fill="#82746a"></rect>
+        <rect x="520" y="262" width="42" height="102" rx="20" fill="#82746a"></rect>
+        <rect x="322" y="290" width="108" height="50" rx="15" fill="#9c8e80"></rect>
+        <rect x="430" y="290" width="108" height="50" rx="15" fill="#978979"></rect>
+        <rect x="326" y="292" width="100" height="6" rx="3" fill="#fff" opacity="0.14"></rect>
+        <rect x="434" y="292" width="100" height="6" rx="3" fill="#fff" opacity="0.14"></rect>
+        <rect x="296" y="336" width="258" height="28" rx="9" fill="#75685c"></rect>
+        <rect x="308" y="362" width="10" height="14" rx="2" fill="#3b3430"></rect>
+        <rect x="532" y="362" width="10" height="14" rx="2" fill="#3b3430"></rect>
+      </g>
+      <g transform="rotate(-9 358 282)">
+        <rect class="tx" x="330" y="254" width="56" height="56" rx="13"></rect>
+        <rect x="330" y="254" width="56" height="56" rx="13" fill="url(#rs-folds)" opacity="0.5"></rect>
+      </g>
+      <g transform="rotate(10 500 284)">
+        <rect x="474" y="258" width="52" height="52" rx="12" fill="#efe6d6"></rect>
+        <rect class="tx" x="474" y="272" width="52" height="7"></rect>
+        <rect class="tx" x="474" y="288" width="52" height="7"></rect>
+      </g>
+
+      <!-- coffee table -->
+      <g>
+        <ellipse cx="410" cy="426" rx="78" ry="15" fill="#000" opacity="0.18"></ellipse>
+        <path d="M356 412 V 432 M464 412 V 432 M410 418 V 440" stroke="#4a3a2c" stroke-width="5" stroke-linecap="round"></path>
+        <ellipse cx="410" cy="410" rx="76" ry="15" fill="#8b6a49"></ellipse>
+        <ellipse cx="410" cy="407" rx="76" ry="15" fill="#a98562"></ellipse>
+        <rect x="384" y="398" width="34" height="6" rx="1.5" fill="#efe6d6"></rect>
+        <rect x="387" y="392" width="30" height="6" rx="1.5" fill="#7f927e"></rect>
+        <path d="M440 407 q -2 -12 4 -18 h 12 q 6 6 4 18 z" fill="#f4eee2"></path>
+        <path d="M450 389 q -8 -18 -2 -30 M450 389 q 4 -14 12 -22" stroke="#7a8d58" stroke-width="2" fill="none" stroke-linecap="round"></path>
+        <circle cx="448" cy="359" r="4" fill="#ddb968"></circle>
+        <circle cx="462" cy="367" r="3.5" fill="#ddb968"></circle>
+      </g>
+
+      <!-- plant -->
+      <g>
+        <g class="leaves" transform="translate(266 330)">
+          {leaves.map((l) => <path d="M0 0 C -11 -22 -9 -52 0 -78 C 9 -52 11 -22 0 0Z" fill={l.tone} transform={`rotate(${l.a}) scale(1 ${l.len})`}></path>)}
+        </g>
+        <path d="M240 328 H 292 L 285 376 H 247Z" fill="#c9a878"></path>
+        <path d="M243 342 H 289 M245 355 H 287 M246 367 H 286" stroke="#a98a5a" stroke-width="2" fill="none"></path>
+        <rect x="238" y="324" width="56" height="9" rx="4" fill="#d6b887"></rect>
+      </g>
+
+      <!-- side table and lamp -->
+      <g>
+        <circle class="lampglow" cx="598" cy="244" r="66" fill="url(#rs-lamp)"></circle>
+        <path d="M578 318 L574 376 M620 318 L624 376" stroke="#5a4636" stroke-width="5" stroke-linecap="round"></path>
+        <rect x="570" y="312" width="60" height="9" rx="4.5" fill="#8b6a49"></rect>
+        <rect x="578" y="352" width="44" height="5" rx="2" fill="#6f5339"></rect>
+        <ellipse cx="600" cy="311" rx="13" ry="3.5" fill="#3b3833"></ellipse>
+        <rect x="598" y="262" width="4" height="50" fill="#3b3833"></rect>
+        <path d="M576 264 H 624 L 613 222 H 587Z" fill="#f6ebd3"></path>
+        <path d="M576 264 H 624 L 622 258 H 578Z" fill="#000" opacity="0.07"></path>
+      </g>
+
+      <!-- paint roller (revealed during a repaint) -->
+      <g class="roller" data-roller style="opacity:0">
+        <rect x="-4" y="-4" width="116" height="26" rx="13" fill="#f3efe7" stroke="#3b3833" stroke-width="2.5"></rect>
+        <rect data-roller-paint x="-1" y="-1" width="110" height="20" rx="10" fill={wallDefault.hex}></rect>
+        <path d="M112 9 H 124 V 44 H 56 V 66" stroke="#3b3833" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round"></path>
+        <rect x="46" y="64" width="20" height="46" rx="7" fill="#b47962" stroke="#3b3833" stroke-width="2.5"></rect>
+      </g>
+    </svg>
+
+    <p class="chip-tag" aria-hidden="true">
+      <span class="chip-sw" data-chip-sw style={`background:${wallDefault.hex}`}></span>
+      <span class="chip-txt">
+        <span class="chip-k">On the wall</span>
+        <span class="chip-n" data-chip-name>{wallDefault.name}</span>
+      </span>
+    </p>
+    <p class="hint" aria-hidden="true">
+      <span>Go on, repaint it</span>
+      <svg width="46" height="34" viewBox="0 0 46 34" fill="none"
+        ><path d="M2 4 C 18 0, 32 8, 36 26" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M28 22 L 36 28 L 40 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg
+      >
+    </p>
+  </div>
+
+  <div class="controls">
+    <fieldset class="pick">
+      <legend>Wall <span class="now" data-now="wall">{wallDefault.name}</span></legend>
+      <div class="swatches">
+        {
+          walls.map((w) => (
+            <label class="sw" style={`--c:${w.hex}`}>
+              <input type="radio" name="rs-wall" value={w.id} checked={w.id === defaults.wall} data-kind="wall" />
+              <span class="dot" aria-hidden="true"></span>
+              <span class="sr-only">{w.name}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+    <fieldset class="pick">
+      <legend>Floor <span class="now" data-now="floor">{floorDefault.name}</span></legend>
+      <div class="swatches">
+        {
+          floors.map((f) => (
+            <label class="sw sw--sq" style={`--bg:${floorPreview(f)}`}>
+              <input type="radio" name="rs-floor" value={f.id} checked={f.id === defaults.floor} data-kind="floor" />
+              <span class="dot" aria-hidden="true"></span>
+              <span class="sr-only">{f.name}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+    <fieldset class="pick">
+      <legend>Fabric <span class="now" data-now="textile">{textileDefault.name}</span></legend>
+      <div class="swatches">
+        {
+          textiles.map((t) => (
+            <label class="sw" style={`--c:${t.hex}`}>
+              <input type="radio" name="rs-textile" value={t.id} checked={t.id === defaults.textile} data-kind="textile" />
+              <span class="dot" aria-hidden="true"></span>
+              <span class="sr-only">{t.name}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+  </div>
+
+  <div class="foot">
+    <p class="fine">Colors on screen are only a starting point. Real samples tell the true story.</p>
+    <div class="foot-actions">
+      <button type="button" class="copy" data-copy>Copy my combo</button>
+      <span class="copied" data-copied role="status"></span>
+    </div>
+  </div>
+  <p class="sr-only" aria-live="polite" data-live></p>
+</div>
+
+<style>
+  .studio {
+    position: relative;
+    display: grid;
+    gap: 18px;
+  }
+
+  .frame {
+    position: relative;
+    border-radius: var(--radius);
+    background: var(--paper);
+    padding: clamp(8px, 1.2vw, 14px);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.9) inset,
+      0 40px 80px -40px rgb(34 44 42 / 0.5),
+      0 0 0 1px rgb(34 44 42 / 0.1);
+  }
+  .room {
+    width: 100%;
+    height: auto;
+    border-radius: calc(var(--radius) - 10px);
+    overflow: hidden;
+    background: #eadfcb;
+  }
+
+  .wall {
+    transition: fill 0.4s ease;
+  }
+  .tx {
+    fill: var(--textile);
+    transition: fill 0.55s ease;
+  }
+  .tx-stroke {
+    stroke: var(--textile);
+    transition: stroke 0.55s ease;
+  }
+
+  .floor {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .studio[data-floor='oak'] .fl-oak,
+  .studio[data-floor='walnut'] .fl-walnut,
+  .studio[data-floor='chevron'] .fl-chevron,
+  .studio[data-floor='stone'] .fl-stone {
+    opacity: 1;
+  }
+
+  .sunpatch {
+    opacity: 0.2;
+    animation: patch 9s ease-in-out infinite alternate;
+  }
+  .lampglow {
+    animation: lamp 6s ease-in-out infinite alternate;
+  }
+  .blades {
+    transform-origin: 189px 160px;
+    animation: spin 22s linear infinite;
+  }
+  .leaves {
+    animation: sway 7s ease-in-out infinite alternate;
+    transform-origin: 266px 330px;
+  }
+  @keyframes patch {
+    to {
+      opacity: 0.32;
+    }
+  }
+  @keyframes lamp {
+    from {
+      opacity: 0.7;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes sway {
+    from {
+      transform: translate(266px, 330px) rotate(-1.6deg);
+    }
+    to {
+      transform: translate(266px, 330px) rotate(1.6deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sunpatch,
+    .lampglow,
+    .blades,
+    .leaves {
+      animation: none;
+    }
+  }
+
+  .chip-tag {
+    position: absolute;
+    left: clamp(-10px, -0.6vw, -4px);
+    bottom: clamp(18px, 3vw, 34px);
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 14px 30px -12px rgb(34 44 42 / 0.5), 0 0 0 1px rgb(34 44 42 / 0.08);
+    transform: rotate(-4deg);
+    overflow: hidden;
+  }
+  .chip-sw {
+    width: 44px;
+    transition: background 0.4s ease 0.9s;
+  }
+  .chip-txt {
+    display: grid;
+    padding: 9px 14px 9px 12px;
+    line-height: 1.2;
+  }
+  .chip-k {
+    font-family: var(--f-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .chip-n {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-weight: 560;
+    font-size: 1.0625rem;
+  }
+
+  .hint {
+    position: absolute;
+    right: 6px;
+    top: -34px;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    color: var(--clay-deep);
+    font-family: var(--f-display);
+    font-style: italic;
+    font-variation-settings: 'opsz' 36;
+    font-size: 1.1875rem;
+    transform: rotate(-3deg);
+    pointer-events: none;
+  }
+  .hint svg {
+    margin-bottom: -22px;
+    transform: scaleX(-1) rotate(8deg);
+  }
+
+  /* controls */
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, auto));
+    justify-content: space-between;
+    gap: 12px 20px;
+    padding: 4px 4px 0;
+  }
+  .pick {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .pick legend {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin-bottom: 10px;
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .now {
+    margin-top: 3px;
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-size: 1rem;
+    letter-spacing: -0.005em;
+    text-transform: none;
+    font-weight: 560;
+    color: var(--ink);
+  }
+  .swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sw {
+    position: relative;
+    display: block;
+    cursor: pointer;
+  }
+  .sw input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .dot {
+    display: block;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 0 1px rgb(34 44 42 / 0.22) inset, 0 3px 8px -3px rgb(34 44 42 / 0.4);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  }
+  .sw--sq .dot {
+    border-radius: 9px;
+    background: var(--bg);
+  }
+  .sw:hover .dot {
+    transform: translateY(-2px) scale(1.06);
+  }
+  .sw input:checked + .dot {
+    box-shadow:
+      0 0 0 2.5px var(--porcelain),
+      0 0 0 4.5px var(--ink),
+      0 3px 8px -3px rgb(34 44 42 / 0.4);
+  }
+  .sw input:focus-visible + .dot {
+    outline: 3px solid var(--clay-deep);
+    outline-offset: 5px;
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 20px;
+    padding: 0 4px;
+  }
+  .fine {
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+    max-width: 30em;
+  }
+  .foot-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .copy {
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1.5px solid color-mix(in srgb, var(--ink) 55%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  }
+  .copy:hover {
+    background: var(--ink);
+    color: var(--porcelain);
+  }
+  .copied {
+    font-size: 0.8125rem;
+    color: var(--sage-deep);
+    font-weight: 600;
+  }
+
+  @media (max-width: 360px) {
+    .dot {
+      width: 30px;
+      height: 30px;
+    }
+    .swatches {
+      gap: 5px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .controls {
+      grid-template-columns: 1fr 1fr;
+    }
+    .pick:nth-child(1) {
+      grid-column: 1 / -1;
+    }
+    .swatches {
+      gap: 7px;
+    }
+    .hint {
+      top: -30px;
+      font-size: 1.0625rem;
+    }
+    .chip-tag {
+      left: -4px;
+    }
+    .chip-sw {
+      width: 34px;
+    }
+    .chip-n {
+      font-size: 0.9375rem;
+    }
+  }
+</style>

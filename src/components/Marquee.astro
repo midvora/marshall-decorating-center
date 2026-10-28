@@ -1,0 +1,99 @@
+---
+const items = [
+  { t: 'Paint & color', c: '#b47962' },
+  { t: 'Wallpaper', c: '#7f927e' },
+  { t: 'Flooring', c: '#ddb968' },
+  { t: 'Window treatments', c: '#9db7c6' },
+  { t: 'Décor & furnishings', c: '#c58468' },
+  { t: 'Gifts & accessories', c: '#a8b5a0' },
+];
+---
+
+<div class="marquee" aria-label="What you can explore: paint and color, wallpaper, flooring, window treatments, décor and furnishings, gifts and accessories" role="group">
+  <div class="track" aria-hidden="true">
+    {
+      [0, 1].map(() => (
+        <ul>
+          {items.map((i) => (
+            <li>
+              <span class="dot" style={`background:${i.c}`}></span>
+              <span class="t">{i.t}</span>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--porcelain);
+    padding-block: clamp(18px, 2.6vw, 30px);
+    border-block: 1px solid rgb(255 255 255 / 0.08);
+  }
+  .track {
+    display: flex;
+    width: max-content;
+    animation: slide 46s linear infinite;
+  }
+  .marquee:hover .track {
+    animation-play-state: paused;
+  }
+  ul {
+    display: flex;
+    flex: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(14px, 2vw, 28px);
+    padding-right: clamp(24px, 3.4vw, 52px);
+  }
+  .dot {
+    width: clamp(14px, 1.8vw, 24px);
+    height: clamp(14px, 1.8vw, 24px);
+    border-radius: 50%;
+    flex: none;
+  }
+  .t {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 144;
+    font-size: clamp(1.9rem, 1rem + 3.6vw, 3.9rem);
+    font-weight: 380;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  li:nth-child(even) .t {
+    font-style: normal;
+    font-weight: 440;
+  }
+  @keyframes slide {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+    }
+    ul + ul {
+      display: none;
+    }
+    ul {
+      flex-wrap: wrap;
+      row-gap: 8px;
+    }
+    .marquee {
+      padding-inline: var(--gutter);
+    }
+  }
+</style>

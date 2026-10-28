@@ -1,0 +1,96 @@
+---
+import '../styles/gate.css';
+
+/* MIDVORA SAMPLE GATE, ported from kit version 2.1 (React) to Astro.
+   Shows a name and email card before the sample, notifies Midvora through Web3Forms, then opens the sample.
+   It is a soft gate: it records who looked, it does not hide the files. */
+
+// ---------------- EDIT THESE TWO LINES FOR EACH NEW SAMPLE ----------------
+const CLIENT = 'Marshall Decorating Center';
+const SAMPLE_LABEL = 'Marshall Decorating Center website';
+// --------------------------------------------------------------------------
+
+// Fail loudly rather than show a client someone else's name (or this placeholder).
+if (CLIENT.includes('CLIENT NAME HERE') || SAMPLE_LABEL.includes('CLIENT NAME HERE')) {
+  throw new Error('SampleGate: set CLIENT and SAMPLE_LABEL in SampleGate.astro before using the kit.');
+}
+
+// Fixed at build time. In GitHub Actions it comes from the repo variable VITE_GATE_KEY. Locally: .env.local
+// The Web3Forms access key is a PUBLIC key by design (it ends up in the page code).
+const KEY: string = (import.meta.env.VITE_GATE_KEY ?? process.env.VITE_GATE_KEY ?? '').trim();
+// VITE_FORCE_GATE=1 shows the gate even without a key (to design or test it). Nothing is sent in that mode.
+const FORCE = (import.meta.env.VITE_FORCE_GATE ?? process.env.VITE_FORCE_GATE) === '1';
+const enabled = Boolean(KEY) || FORCE;
+
+// Every GitHub Pages sample under one account shares ONE browser origin, so the "remembered visitor" key
+// must be unique per sample or opening one client's sample would unlock the others.
+const slug = CLIENT.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const STORE = `midvora-sample-visitor:${slug}`;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+
+{
+  enabled && (
+    <>
+      {/* Decided before first paint: gate shown unless this browser already has a remembered visitor. */}
+      <script is:inline define:vars={{ STORE }}>
+        try {
+          if (!localStorage.getItem(STORE)) document.documentElement.classList.add('gated');
+        } catch (e) {
+          document.documentElement.classList.add('gated');
+        }
+      </script>
+      <div
+        class="gate"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Private preview"
+        data-gate
+        data-client={CLIENT}
+        data-label={SAMPLE_LABEL}
+        data-key={KEY}
+        data-store={STORE}
+      >
+        <div class="gate__glow gate__glow--one" aria-hidden="true" />
+        <div class="gate__glow gate__glow--two" aria-hidden="true" />
+        <div class="gate__card" aria-live="polite">
+          <img class="gate__logo" src={`${base}midvora-logo.png`} alt="Midvora. From the Midwest. For the World." width="237" height="146" />
+
+          <div data-gate-form-panel>
+            <p class="gate__eyebrow">Private preview</p>
+            <h1>Welcome to your sample.</h1>
+            <p class="gate__lede">We built a sample website for {CLIENT}. Tell us who you are and we will open it for you.</p>
+            <form data-gate-form>
+              <label>
+                <span>Your name</span>
+                <input type="text" name="name" autocomplete="name" placeholder="Jane Smith" required />
+              </label>
+              <label>
+                <span>Your email</span>
+                <input type="email" name="email" autocomplete="email" placeholder="jane@company.com" required />
+              </label>
+              {/* Honeypot: a hidden CHECKBOX that only a bot would tick. Never a text field: autofill fills those. */}
+              <input type="checkbox" name="botcheck" tabindex="-1" aria-hidden="true" class="gate__trap" />
+              <p class="gate__error" role="alert" data-gate-error hidden>
+                We could not send your request just now. Please try again in 5 minutes.<span data-gate-skip-wrap> Or <button type="button" class="gate__skip" data-gate-skip>open the sample anyway</button>.</span>
+              </p>
+              <button type="submit" class="gate__button" data-gate-submit>View the sample</button>
+            </form>
+            <p class="gate__fine">
+              {KEY ? 'Your name, email, and browser details are sent to Midvora (through the Web3Forms service) so we know the sample was opened.' : 'Preview mode: nothing is sent.'}
+            </p>
+          </div>
+
+          <div class="gate__done" data-gate-done-panel hidden>
+            <span class="gate__check" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+            </span>
+            <h1 data-gate-done-title tabindex="-1"></h1>
+            <p class="gate__lede" data-gate-done-lede></p>
+            <button type="button" class="gate__button" data-gate-open>Open the sample</button>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
