@@ -6,12 +6,54 @@ import '@fontsource/dm-mono/400.css';
 import '@fontsource/dm-mono/500.css';
 import '../styles/global.css';
 import SampleGate from '../components/SampleGate.astro';
+import ListDrawer from '../components/ListDrawer.astro';
+import { site, hours } from '../data/site';
 
 interface Props {
   title: string;
   description: string;
+  /** Adds LocalBusiness structured data. Used on the home and visit pages. */
+  schema?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, schema = false } = Astro.props;
+
+const hoursJson = JSON.stringify({ timezone: site.timezone, hours });
+
+const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const to24 = (t: string) => {
+  const [hm, ap] = t.split(' ');
+  let [h, m] = hm.split(':').map(Number);
+  if (ap === 'PM' && h !== 12) h += 12;
+  if (ap === 'AM' && h === 12) h = 0;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+};
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeGoodsStore',
+  name: site.name,
+  telephone: '+1-507-532-4666',
+  foundingDate: String(site.founded),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.street,
+    addressLocality: 'Marshall',
+    addressRegion: 'MN',
+    postalCode: '56258',
+    addressCountry: 'US',
+  },
+  openingHoursSpecification: hours
+    .filter((h) => h.open)
+    .map((h) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: h.days.map((d) => dayName[d]),
+      opens: to24(h.open!),
+      closes: to24(h.close!),
+    })),
+  makesOffer: ['Benjamin Moore paint', 'Flooring', 'Window treatments', 'Home decor and furniture'].map((n) => ({
+    '@type': 'Offer',
+    itemOffered: { '@type': 'Product', name: n },
+  })),
+};
 ---
 
 <!doctype html>
@@ -26,16 +68,19 @@ const { title, description } = Astro.props;
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={`${import.meta.env.BASE_URL.replace(/\/?$/, '/')}favicon.svg`} type="image/svg+xml" />
     <script is:inline>
       document.documentElement.classList.add('js');
     </script>
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />}
   </head>
   <body id="top">
     <SampleGate />
     <div id="site">
       <a class="skip" href="#main">Skip to content</a>
       <slot />
+      <ListDrawer />
+      <script type="application/json" id="store-hours" set:html={hoursJson} />
     </div>
     <script>
       import '../scripts/main.ts';

@@ -1,0 +1,169 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import PageHero from '../../components/PageHero.astro';
+import Promo from '../../components/Promo.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import Photo from '../../components/Photo.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Footer from '../../components/Footer.astro';
+import MobileBar from '../../components/MobileBar.astro';
+import { promos } from '../../data/promos';
+import { url } from '../../lib/url';
+
+const others = promos.filter((p) => p.status !== 'current');
+const statusLabel = { current: 'This week', upcoming: 'Coming next', past: 'Past promotion' } as const;
+---
+
+<Base
+  title="Promotions | Marshall Decorating Center (unofficial concept by Midvora)"
+  description="This week's promotion and seasonal displays at Marshall Decorating Center in Marshall, Minnesota. A fresh feature every week."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <PageHero
+      crumb="Promotions"
+      eyebrow="Promotions"
+      title="What is new <em>this week.</em>"
+      lede="A fresh feature every week: new arrivals, seasonal displays and specials. Check back often, or stop in and see it in person."
+      photo="promo2"
+      pos="50% 50%"
+    >
+      <a class="btn" href={url('/promotions/fall-harvest/')}>See this week's collection <span class="arr" aria-hidden="true">→</span></a>
+    </PageHero>
+
+    <Promo />
+
+    <section class="band" aria-labelledby="more-h">
+      <div class="container">
+        <SectionHead id="more-h" eyebrow="More from the floor" title="Coming up, <em>and looking back.</em>" lede="Every promotion gets its own page, so you can find a display again or share it with a friend." split />
+        <ul class="list">
+          {
+            others.map((p) => (
+              <li data-rise>
+                <a class="card" href={url(`/promotions/${p.slug}/`)}>
+                  <div class="art">
+                    <Photo name={p.cover} widths={[360, 540, 720]} sizes="(min-width: 1020px) 30vw, 90vw" />
+                    <span class={`pill pill--${p.status}`}>{statusLabel[p.status]}</span>
+                  </div>
+                  <div class="body">
+                    <p class="when">{p.dates}</p>
+                    <h3>{p.name}</h3>
+                    <p class="sum">{p.summary}</p>
+                    <span class="go">See the display <span aria-hidden="true">→</span></span>
+                  </div>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <CtaBand title="Want to see <em>it in person?</em>" text="Displays change quickly. Stop in and see what is on the floor this week." />
+  </main>
+  <Footer />
+  <MobileBar />
+</Base>
+
+<style>
+  .list {
+    display: grid;
+    gap: clamp(18px, 2.4vw, 32px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 720px) {
+    .list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff;
+    text-decoration: none;
+    box-shadow:
+      0 28px 44px -32px rgb(34 44 42 / 0.55),
+      0 0 0 1px rgb(34 44 42 / 0.08);
+    transition: translate 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  }
+  .card:hover,
+  .card:focus-visible {
+    translate: 0 -6px;
+    box-shadow:
+      0 40px 56px -32px rgb(34 44 42 / 0.6),
+      0 0 0 1px rgb(34 44 42 / 0.1);
+  }
+  .art {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--cream);
+  }
+  .art :global(img) {
+    transition: transform 1.2s var(--ease);
+  }
+  .card:hover .art :global(img) {
+    transform: scale(1.05);
+  }
+  .pill {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    z-index: 2;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--paper);
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .pill--upcoming {
+    background: var(--wheat);
+  }
+  .body {
+    display: grid;
+    flex: 1;
+    align-content: start;
+    gap: 6px;
+    padding: 20px 22px 24px;
+  }
+  .when {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--clay-deep);
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 480;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .sum {
+    color: var(--ink-soft);
+    font-size: 0.9375rem;
+  }
+  .go {
+    margin-top: 10px;
+    font-weight: 600;
+    color: var(--clay-deep);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .art :global(img) {
+      transition: none;
+    }
+  }
+</style>

@@ -1,29 +1,18 @@
 ---
-import RoomStudio from './RoomStudio.astro';
-
-const chips = [
-  { x: '-1.8%', y: '12%', r: '-14deg', c: ['#a8b5a0', '#8fa086', '#6f8268'], d: 0.5 },
-  { x: '47%', y: '-4%', r: '9deg', c: ['#f0d9a0', '#ddb968', '#c49c4a'], d: 0.8 },
-  { x: '94%', y: '56%', r: '17deg', c: ['#e3b6a3', '#c58468', '#a8654a'], d: 1.2 },
-  { x: '-2%', y: '78%', r: '-6deg', c: ['#b8cdd9', '#9db7c6', '#7c9aab'], d: 0.7 },
-];
+import HeroDecor from './HeroDecor.astro';
+import Photo from './Photo.astro';
+import Stamp from './Stamp.astro';
+import StatusBadge from './StatusBadge.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
 ---
 
 <section class="hero" aria-labelledby="hero-h" data-hero>
-  <div class="decor" aria-hidden="true">
-    <span class="sun"></span>
-    {
-      chips.map((c) => (
-        <span class="pchip" data-depth={c.d} style={`--x:${c.x};--y:${c.y};--r:${c.r};--c1:${c.c[0]};--c2:${c.c[1]};--c3:${c.c[2]}`}>
-          <i></i><i></i><i></i><b></b>
-        </span>
-      ))
-    }
-  </div>
+  <HeroDecor />
 
   <div class="container grid">
     <div class="copy">
-      <p class="eyebrow rise" style="--d:0">Marshall, Minnesota · Paint • Floors • More</p>
+      <p class="eyebrow rise" style="--d:0">Marshall, Minnesota · Family owned since {site.founded}</p>
 
       <h1 id="hero-h" class="display">
         <span class="ln"><span class="w" style="--d:1">Make room</span></span>
@@ -41,24 +30,55 @@ const chips = [
       </h1>
 
       <p class="lede rise" style="--d:5">
-        Explore paint, flooring, window treatments and décor with a local store that knows the value of a good
-        conversation.
+        Benjamin Moore paint, flooring, window treatments and décor, all under one roof on West Main Street. Bring a
+        photo, a paint chip or just an idea.
       </p>
 
       <div class="cta-row rise" style="--d:6">
-        <a class="btn" href="#explore">Explore the store <span class="arr" aria-hidden="true">→</span></a>
-        <a class="btn btn--ghost" href="#visit">Find us on Main Street</a>
+        <a class="btn" href={url('/shop/')}>Shop the store <span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn--ghost" href={url('/visit/')}>Plan a visit</a>
       </div>
 
-      <ul class="facts rise" style="--d:7">
-        <li>Benjamin Moore paint</li>
-        <li>In-store decorating help</li>
-        <li>Residential + commercial</li>
-      </ul>
+      <div class="today rise" style="--d:7">
+        <StatusBadge />
+        <p class="where">
+          {site.address}
+          <span class="sep" aria-hidden="true">·</span>
+          <a href={site.phoneHref}>{site.phoneDisplay}</a>
+        </p>
+      </div>
     </div>
 
-    <div class="studio-wrap rise" style="--d:3">
-      <RoomStudio />
+    <div class="stage rise" style="--d:3">
+      <div class="chip">
+        <figure class="store" data-hero-photo>
+          <Photo
+            name="storefront"
+            widths={[720, 1080, 1536]}
+            sizes="(min-width: 1020px) 58vw, 100vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+        <div class="foot">
+          <p class="find">
+            <span class="cap-k">Find us</span>
+            <span class="cap-v">Look for the blue awning on W Main St</span>
+          </p>
+          <span class="bands" aria-hidden="true">
+            <i style="background:#7f927e"></i><i style="background:#a8b5a0"></i><i style="background:#ddb968"></i><i
+              style="background:#c58468"></i
+            ><i style="background:#b47962"></i><i style="background:#9db7c6"></i><i style="background:#46575a"></i>
+          </span>
+        </div>
+      </div>
+
+      <figure class="inside" aria-hidden="false">
+        <Photo name="showroomWide" widths={[320, 480]} sizes="220px" pos="30% 50%" />
+        <figcaption class="sr-only">Inside the showroom</figcaption>
+      </figure>
+
+      <Stamp class="stamp" />
     </div>
   </div>
 </section>
@@ -71,70 +91,15 @@ const chips = [
     overflow: clip;
   }
 
-  .decor {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-  }
-  .sun {
-    position: absolute;
-    right: -10%;
-    top: -14%;
-    width: min(70vw, 820px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(closest-side, #f3dfae 0%, rgb(243 223 174 / 0.55) 45%, rgb(243 223 174 / 0) 100%);
-  }
-  .pchip {
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr 26px;
-    width: 54px;
-    height: 150px;
-    border-radius: 5px;
-    overflow: hidden;
-    transform: rotate(var(--r));
-    box-shadow: 0 18px 30px -16px rgb(34 44 42 / 0.45), 0 0 0 1px rgb(34 44 42 / 0.06);
-    opacity: 0.9;
-  }
-  .pchip i:nth-child(1) {
-    background: var(--c1);
-  }
-  .pchip i:nth-child(2) {
-    background: var(--c2);
-  }
-  .pchip i:nth-child(3) {
-    background: var(--c3);
-  }
-  .pchip b {
-    position: relative;
-    background: #fff;
-  }
-  .pchip b::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 8px;
-    height: 8px;
-    margin: -4px 0 0 -4px;
-    border-radius: 50%;
-    background: var(--porcelain);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.35) inset;
-  }
-
   .grid {
     display: grid;
-    gap: clamp(36px, 6vw, 56px);
+    gap: clamp(40px, 6vw, 56px);
     align-items: center;
   }
   @media (min-width: 1020px) {
     .grid {
-      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-      gap: clamp(32px, 5vw, 80px);
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: clamp(28px, 4vw, 64px);
     }
   }
 
@@ -145,7 +110,7 @@ const chips = [
   }
 
   h1 {
-    font-size: clamp(3.1rem, 1rem + 6.2vw, 6.1rem);
+    font-size: clamp(3.1rem, 0.7rem + 5.7vw, 5.7rem);
     margin-block: 4px 6px;
   }
   .ln {
@@ -201,40 +166,119 @@ const chips = [
     margin-top: 6px;
   }
 
-  .facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 10px;
-    margin: 6px 0 0;
-    padding: 0;
-    list-style: none;
+  .today {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+    margin-top: 4px;
   }
-  .facts li {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 14px 7px 12px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--cream) 70%, transparent);
-    font-size: 0.875rem;
-    font-weight: 500;
+  .where {
+    color: var(--ink-soft);
+    font-size: 0.9375rem;
   }
-  .facts li::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--clay);
+  .where a {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
   }
-  .facts li:nth-child(2)::before {
-    background: var(--sage);
-  }
-  .facts li:nth-child(3)::before {
-    background: var(--wheat);
+  .sep {
+    margin-inline: 6px;
+    color: var(--clay);
   }
 
-  .studio-wrap {
-    padding-top: 34px;
+  /* ---- the photo stage ---- */
+  .stage {
+    --inw: clamp(120px, 15vw, 190px);
+    position: relative;
+    padding: 0 0 clamp(28px, 4vw, 48px);
+  }
+
+  /* The storefront as one big paint-chip card: a wide photo with a single sweeping corner,
+     and the color bands along the bottom edge. */
+  .chip {
+    position: relative;
+    padding: clamp(8px, 0.9vw, 12px) clamp(8px, 0.9vw, 12px) 0;
+    border-radius: clamp(26px, 3vw, 38px);
+    background: var(--paper);
+    box-shadow:
+      0 70px 100px -48px rgb(34 44 42 / 0.7),
+      0 0 0 1px rgb(34 44 42 / 0.08);
+  }
+  .store {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 3 / 2;
+    border-radius: clamp(96px, 17vw, 260px) clamp(14px, 1.6vw, 22px) clamp(14px, 1.6vw, 22px) clamp(14px, 1.6vw, 22px);
+    overflow: hidden;
+    background: var(--cream);
+  }
+  .store :global(img) {
+    transform-origin: 50% 40%;
+  }
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    /* the polaroid hangs over the left end of the strip, so the caption starts after it */
+    padding: clamp(12px, 1.4vw, 18px) clamp(10px, 1.4vw, 20px) clamp(14px, 1.6vw, 20px) calc(var(--inw) + 16px);
+    min-height: clamp(64px, 7vw, 84px);
+  }
+  .find {
+    display: grid;
+    gap: 2px;
+    line-height: 1.25;
+  }
+  .bands {
+    display: flex;
+    flex: none;
+    gap: 4px;
+  }
+  .bands i {
+    display: block;
+    width: clamp(12px, 1.2vw, 16px);
+    height: clamp(30px, 3vw, 40px);
+    border-radius: 5px;
+  }
+  .cap-k {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--clay-deep);
+  }
+  .cap-v {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-weight: 520;
+    font-size: clamp(0.9375rem, 0.8rem + 0.5vw, 1.0625rem);
+  }
+
+  .inside {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 3;
+    width: var(--inw);
+    aspect-ratio: 4 / 5;
+    margin: 0;
+    padding: 6px;
+    border-radius: 18px;
+    background: var(--paper);
+    box-shadow: 0 30px 44px -22px rgb(34 44 42 / 0.6);
+    transform: rotate(-4deg);
+    overflow: hidden;
+  }
+  .inside :global(img) {
+    border-radius: 13px;
+  }
+  .stage :global(.stamp) {
+    position: absolute;
+    /* hangs off the top-right corner so it never covers the awning lettering */
+    right: clamp(-28px, -1.8vw, -8px);
+    top: clamp(-44px, -3vw, -24px);
+    z-index: 4;
   }
 
   @keyframes wordup {
@@ -267,8 +311,14 @@ const chips = [
     }
   }
 
-  @media (max-width: 1019px) {
-    .pchip {
+  @media (max-width: 520px) {
+    .stage {
+      --inw: 104px;
+    }
+    .inside {
+      left: -4px;
+    }
+    .bands {
       display: none;
     }
   }

@@ -1,24 +1,45 @@
 ---
+import Photo from './Photo.astro';
+import { url } from '../lib/url';
+
 const seasons = [
   {
     key: 'spring',
     label: 'Spring',
     title: 'Florals & Easter décor',
     copy: 'Blossoms, bunnies and fresh table settings for the first warm days.',
+    photo: 'springTable',
+    pos: '50% 30%',
+    href: '/promotions/spring-florals/',
   },
   {
     key: 'summer',
     label: 'Summer',
     title: 'Crazy Days sales',
     copy: 'Great deals and a cool, air-conditioned place to shop.',
+    photo: 'navyStripe',
+    pos: '50% 45%',
+    href: '/promotions/summer-crazy-days/',
   },
   {
     key: 'fall',
     label: 'Fall',
     title: 'Fall florals & harvest décor',
     copy: 'Pumpkins, warm leaves and cozy color for the months ahead.',
+    photo: 'fallWide',
+    pos: '36% 50%',
+    href: '/promotions/fall-harvest/',
   },
-];
+  {
+    key: 'holiday',
+    label: 'Holiday',
+    title: 'The holiday table',
+    copy: 'Reindeer, gnomes and snowflakes, set against the color wall.',
+    photo: 'paintWall',
+    pos: '50% 78%',
+    href: '/promotions/holiday-table/',
+  },
+] as const;
 ---
 
 <section class="seasons" id="seasons" aria-labelledby="seasons-h">
@@ -27,8 +48,8 @@ const seasons = [
       <p class="eyebrow" data-reveal>Through the year</p>
       <h2 id="seasons-h" class="display" data-split>The shelves change <em>with the seasons.</em></h2>
       <p class="lede" data-reveal>
-        There is always a reason to stop in and see what is new. Sales change from season to season, so ask what is
-        on the floor.
+        There is always a reason to stop in and see what is new. Displays and sales change from season to season, so
+        ask what is on the floor.
       </p>
     </header>
 
@@ -36,105 +57,14 @@ const seasons = [
       {
         seasons.map((s) => (
           <li class={`arch arch--${s.key}`} data-arch>
-            <div class="shape" aria-hidden="true">
-              {s.key === 'spring' && (
-                <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMax slice">
-                  <defs>
-                    <linearGradient id="s-sp" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0" stop-color="#f5d7d0" />
-                      <stop offset="1" stop-color="#f7ecdf" />
-                    </linearGradient>
-                  </defs>
-                  <rect width="300" height="380" fill="url(#s-sp)" />
-                  <circle cx="226" cy="92" r="40" fill="#fff4dc" />
-                  <g class="sway">
-                    {[
-                      [90, 150, '#e79a95', 0],
-                      [150, 112, '#fff6ee', 0.4],
-                      [210, 168, '#f2b7b0', 0.8],
-                    ].map(([x, y, col, d]) => (
-                      <g style={`animation-delay:${d}s`} class="tulip">
-                        <path d={`M${x} 380 V ${(y as number) + 40}`} stroke="#6f8a58" stroke-width="5" fill="none" stroke-linecap="round" />
-                        <path d={`M${x} 372 C ${(x as number) - 34} 348, ${(x as number) - 30} 304, ${(x as number) - 8} 282 C ${(x as number) - 2} 312, ${x} 344, ${x} 372Z`} fill="#8aa56d" />
-                        <path d={`M${x} 352 C ${(x as number) + 34} 330, ${(x as number) + 30} 290, ${(x as number) + 8} 270 C ${(x as number) + 2} 298, ${x} 328, ${x} 352Z`} fill="#7a965f" />
-                        <path d={`M${(x as number) - 32} ${y} C ${(x as number) - 36} ${(y as number) + 52}, ${(x as number) + 36} ${(y as number) + 52}, ${(x as number) + 32} ${y} L ${(x as number) + 16} ${(y as number) - 30} L ${x} ${(y as number) - 6} L ${(x as number) - 16} ${(y as number) - 30} Z`} fill={col as string} />
-                        <path d={`M${x} ${(y as number) - 4} C ${(x as number) - 6} ${(y as number) + 14}, ${(x as number) - 6} ${(y as number) + 30}, ${x} ${(y as number) + 40}`} stroke="#000" stroke-opacity="0.08" stroke-width="3" fill="none" />
-                      </g>
-                    ))}
-                  </g>
-                </svg>
-              )}
-              {s.key === 'summer' && (
-                <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMid slice">
-                  <defs>
-                    <linearGradient id="s-su" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0" stop-color="#cfe0e6" />
-                      <stop offset="1" stop-color="#f6e7bd" />
-                    </linearGradient>
-                  </defs>
-                  <rect width="300" height="380" fill="url(#s-su)" />
-                  <g class="rays" transform="translate(150 150)">
-                    {Array.from({ length: 16 }, (_, i) => (
-                      <path d="M-7 -78 L0 -112 L7 -78Z" fill="#ddb968" transform={`rotate(${i * 22.5})`} />
-                    ))}
-                    <circle r="62" fill="#e9c570" />
-                    <circle r="62" fill="#fff" opacity="0.18" cx="-8" cy="-8" />
-                  </g>
-                  <path d="M0 330 Q 80 306 150 322 T 300 312 V 380 H 0Z" fill="#b6c49a" />
-                  <path d="M0 352 Q 90 332 160 346 T 300 340 V 380 H 0Z" fill="#8aa56d" />
-                  <g class="tagsw">
-                    <path d="M214 232 q 18 -34 8 -64" stroke="#7a5a3a" stroke-width="2.5" fill="none" />
-                    <g transform="translate(222 232) rotate(-8)">
-                      <path d="M-36 -2 L-18 -26 H36 V40 H-18Z" fill="#fff8ec" stroke="#b47962" stroke-width="3" />
-                      <circle cx="-14" cy="-3" r="4" fill="#cfe0e6" />
-                      <text x="8" y="26" text-anchor="middle" font-family="Georgia, serif" font-size="46" font-weight="700" fill="#b47962">%</text>
-                    </g>
-                  </g>
-                </svg>
-              )}
-              {s.key === 'fall' && (
-                <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMax slice">
-                  <defs>
-                    <linearGradient id="s-fa" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0" stop-color="#f1cfa0" />
-                      <stop offset="1" stop-color="#f6e6d3" />
-                    </linearGradient>
-                    <clipPath id="s-pk1"><ellipse cx="86" cy="308" rx="66" ry="50" /></clipPath>
-                  </defs>
-                  <rect width="300" height="380" fill="url(#s-fa)" />
-                  <circle cx="82" cy="96" r="36" fill="#fbe6bf" />
-                  <g class="leaf l1"><path d="M232 70 C 210 90, 214 120, 238 134 C 262 120, 262 90, 232 70Z" fill="#c58468" /><path d="M238 134 V 78" stroke="#8a4e39" stroke-width="2" /></g>
-                  <g class="leaf l2"><path d="M150 40 C 134 56, 138 80, 156 90 C 174 80, 174 56, 150 40Z" fill="#ddb968" /><path d="M156 90 V 48" stroke="#a9812d" stroke-width="2" /></g>
-                  <g class="leaf l3"><path d="M40 170 C 24 186, 28 208, 46 218 C 64 208, 64 186, 40 170Z" fill="#b25a3c" /><path d="M46 218 V 178" stroke="#7e3c26" stroke-width="2" /></g>
-                  <ellipse cx="150" cy="372" rx="170" ry="30" fill="#8aa56d" opacity="0.5" />
-                  <g>
-                    <ellipse cx="86" cy="308" rx="66" ry="50" fill="#1f2624" />
-                    <g clip-path="url(#s-pk1)" stroke="#f6efe3" stroke-width="9" fill="none">
-                      <path d="M86 258 C 54 276, 54 340, 86 358" />
-                      <path d="M86 258 C 118 276, 118 340, 86 358" />
-                      <path d="M86 258 C 24 270, 26 346, 60 356" />
-                      <path d="M86 258 C 148 270, 146 346, 112 356" />
-                    </g>
-                    <path d="M80 262 q -2 -16 8 -22 q 4 8 6 22Z" fill="#6e5a3c" />
-                  </g>
-                  <g>
-                    <ellipse cx="204" cy="326" rx="72" ry="54" fill="#d9772f" />
-                    <g stroke="#a9541a" stroke-width="3" fill="none" stroke-linecap="round">
-                      <path d="M204 272 C 168 292, 168 360, 204 380" />
-                      <path d="M204 272 C 240 292, 240 360, 204 380" />
-                      <path d="M204 272 C 142 284, 144 364, 176 378" />
-                      <path d="M204 272 C 266 284, 264 364, 232 378" />
-                    </g>
-                    <ellipse cx="180" cy="302" rx="20" ry="12" fill="#fff" opacity="0.16" transform="rotate(-24 180 302)" />
-                    <path d="M198 276 q -4 -20 8 -28 q 6 10 6 28Z" fill="#6e5a3c" />
-                    <path d="M214 258 q 22 -8 28 8 q -20 10 -34 -2" fill="#7a965f" />
-                  </g>
-                </svg>
-              )}
+            <div class="shape">
+              <Photo name={s.photo} pos={s.pos} widths={[360, 540, 720]} sizes="(min-width: 1020px) 22vw, (min-width: 640px) 40vw, 80vw" />
             </div>
             <div class="cap">
               <p class="lab">{s.label}</p>
-              <h3 class="ttl">{s.title}</h3>
+              <h3 class="ttl">
+                <a class="stretch" href={url(s.href)}>{s.title}</a>
+              </h3>
               <p class="txt">{s.copy}</p>
             </div>
           </li>
@@ -176,24 +106,32 @@ const seasons = [
 
   .arches {
     display: grid;
-    gap: clamp(36px, 4vw, 56px) clamp(18px, 3vw, 44px);
+    gap: clamp(36px, 4vw, 56px) clamp(18px, 2.4vw, 36px);
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  @media (min-width: 760px) {
+  @media (min-width: 640px) {
     .arches {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
     }
-    .arch:nth-child(2) {
-      margin-top: 64px;
-    }
-    .arch:nth-child(3) {
-      margin-top: 24px;
+    .arch:nth-child(even) {
+      margin-top: 48px;
     }
   }
-  @media (max-width: 759px) {
+  @media (min-width: 1020px) {
+    .arches {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .arch:nth-child(even) {
+      margin-top: 56px;
+    }
+    .arch:nth-child(3) {
+      margin-top: 20px;
+    }
+  }
+  @media (max-width: 639px) {
     .arch {
       max-width: 420px;
       margin-inline: auto;
@@ -202,22 +140,28 @@ const seasons = [
   }
 
   .arch {
+    position: relative;
     display: grid;
     gap: 22px;
   }
   .shape {
+    position: relative;
     aspect-ratio: 300 / 380;
     border-radius: 999px 999px 18px 18px;
     overflow: hidden;
+    background: var(--sky);
     box-shadow: 0 40px 60px -36px rgb(34 44 42 / 0.55);
     transition: transform 0.8s var(--ease);
   }
-  .arch:hover .shape {
+  .arch:hover .shape,
+  .arch:focus-within .shape {
     transform: translateY(-8px);
   }
-  .shape svg {
-    width: 100%;
-    height: 100%;
+  .shape :global(img) {
+    transition: transform 1.4s var(--ease);
+  }
+  .arch:hover .shape :global(img) {
+    transform: scale(1.06);
   }
   .cap {
     display: grid;
@@ -236,75 +180,35 @@ const seasons = [
     font-family: var(--f-display);
     font-variation-settings: 'opsz' 72;
     font-weight: 460;
-    font-size: clamp(1.6rem, 1.3rem + 0.9vw, 2.1rem);
+    font-size: clamp(1.45rem, 1.2rem + 0.8vw, 1.85rem);
     letter-spacing: -0.02em;
     line-height: 1.08;
+  }
+  .stretch {
+    text-decoration: none;
+  }
+  .stretch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .arch:focus-within {
+    outline: 3px solid var(--clay-deep);
+    outline-offset: 6px;
+    border-radius: 18px;
+  }
+  .stretch:focus-visible {
+    outline: none;
   }
   .txt {
     color: var(--ink-soft);
     max-width: 24em;
   }
 
-  .tulip {
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: tul 5s ease-in-out infinite alternate;
-  }
-  @keyframes tul {
-    from {
-      transform: rotate(-1.6deg);
-    }
-    to {
-      transform: rotate(1.8deg);
-    }
-  }
-  .rays {
-    animation: rot 60s linear infinite;
-  }
-  @keyframes rot {
-    to {
-      transform: translate(150px, 150px) rotate(360deg);
-    }
-  }
-  .tagsw {
-    transform-origin: 214px 168px;
-    animation: tagw 4.5s ease-in-out infinite alternate;
-  }
-  @keyframes tagw {
-    from {
-      transform: rotate(-4deg);
-    }
-    to {
-      transform: rotate(5deg);
-    }
-  }
-  .leaf {
-    transform-box: fill-box;
-    transform-origin: 50% 0%;
-    animation: fall 7s ease-in-out infinite alternate;
-  }
-  .l2 {
-    animation-delay: 1.2s;
-  }
-  .l3 {
-    animation-delay: 2.4s;
-  }
-  @keyframes fall {
-    from {
-      transform: rotate(-8deg) translateY(-2px);
-    }
-    to {
-      transform: rotate(10deg) translateY(8px);
-    }
-  }
   @media (prefers-reduced-motion: reduce) {
-    .tulip,
-    .rays,
-    .tagsw,
-    .leaf {
-      animation: none;
-    }
-    .shape {
+    .shape,
+    .shape :global(img) {
       transition: none;
     }
   }

@@ -1,0 +1,156 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import PageHero from '../components/PageHero.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import Split from '../components/Split.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Photo from '../components/Photo.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { url } from '../lib/url';
+
+/* A loose mosaic of the showroom. Each tile is a real corner of the store. */
+const mosaic = [
+  { photo: 'seatingHeron', title: 'Chairs & benches', pos: '50% 40%', cls: 'tall' },
+  { photo: 'artWall', title: 'Framed art', pos: '50% 45%', cls: 'wide' },
+  { photo: 'greenChest', title: 'Chests & lamps', pos: '50% 35%', cls: '' },
+  { photo: 'caneCabinet', title: 'Cabinets & shelves', pos: '50% 40%', cls: '' },
+  { photo: 'showroomWide', title: 'The showroom floor', pos: '40% 50%', cls: 'wide' },
+  { photo: 'navyStripe', title: 'Blue & white', pos: '50% 40%', cls: '' },
+] as const;
+---
+
+<Base
+  title="Décor & furnishings | Marshall Decorating Center (unofficial concept by Midvora)"
+  description="Chairs, chests, lamps, art, florals and gifts at Marshall Decorating Center in Marshall, Minnesota. The displays change with the seasons."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <PageHero
+      crumb="Décor"
+      eyebrow="Décor & furnishings"
+      title="Pull the room <em>together.</em>"
+      lede="Chairs, chests, lamps, art and the little things that make a room feel finished. The displays change with the seasons, so there is always something new to see."
+      photo="seatingHeron"
+      pos="50% 40%"
+    >
+      <a class="btn" href={url('/shop/?dept=decor')}>Shop décor <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn--ghost" href={url('/promotions/')}>This week's promotion</a>
+    </PageHero>
+
+    <section class="band" aria-labelledby="mosaic-h">
+      <div class="container">
+        <SectionHead id="mosaic-h" eyebrow="In the showroom" title="Real corners <em>of the store.</em>" lede="Furniture and accessories are set up in little scenes, so you can picture them at home." split />
+        <ul class="mosaic">
+          {
+            mosaic.map((m) => (
+              <li class={m.cls} data-rise>
+                <Photo name={m.photo} pos={m.pos} widths={[360, 540, 800]} sizes="(min-width: 900px) 30vw, 90vw" />
+                <span class="cap">{m.title}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <FeatureGrid
+      id="kinds"
+      eyebrow="What you'll find"
+      title="Everything for <em>the finishing touches.</em>"
+      cols={4}
+      tone="cream"
+      items={[
+        { k: 'Furniture', title: 'Chairs, chests & benches', copy: 'Smaller pieces that anchor a corner and add storage.' },
+        { k: 'Lighting', title: 'Lamps for every room', copy: 'Table and floor lamps in brass, ceramic and wood.' },
+        { k: 'Walls', title: 'Art, frames & mirrors', copy: 'Landscapes, botanicals and statement mirrors, ready to hang.' },
+        { k: 'Green', title: 'Florals & greenery', copy: 'Stems, wreaths and plants that never need watering.' },
+      ]}
+    />
+
+    <Split
+      id="gifts"
+      eyebrow="Gifts & accessories"
+      title="Something small <em>and thoughtful.</em>"
+      photo="wallpaperBar"
+      pos="78% 55%"
+      reverse
+    >
+      <p>
+        Picture frames, candles, vases, trays and seasonal pieces: easy gifts for a host, a new home or yourself. The
+        shelves turn over often, so it is worth stopping in.
+      </p>
+      <ul>
+        <li>Frames, trays and candle holders</li>
+        <li>Vases, florals and tabletop pieces</li>
+        <li>Seasonal décor for every holiday</li>
+      </ul>
+      <Fragment slot="actions">
+        <a class="btn" href={url('/promotions/')}>See what is new this week <span class="arr" aria-hidden="true">→</span></a>
+      </Fragment>
+    </Split>
+
+    <CtaBand title="Come see <em>what is on the floor.</em>" text="The displays change with the seasons. Stop in and see what is new." />
+  </main>
+  <Footer />
+  <MobileBar />
+</Base>
+
+<style>
+  .mosaic {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: clamp(150px, 26vw, 250px);
+    gap: clamp(10px, 1.6vw, 20px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 900px) {
+    .mosaic {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-rows: clamp(200px, 20vw, 270px);
+    }
+  }
+  .mosaic li {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--cream);
+    box-shadow: 0 30px 46px -32px rgb(34 44 42 / 0.55);
+  }
+  .mosaic li.tall {
+    grid-row: span 2;
+  }
+  .mosaic li.wide {
+    grid-column: span 2;
+  }
+  @media (max-width: 899px) {
+    .mosaic {
+      grid-auto-flow: dense;
+    }
+    .mosaic li.tall {
+      grid-row: auto;
+    }
+  }
+  .mosaic li :global(img) {
+    transition: transform 1.2s var(--ease);
+  }
+  .mosaic li:hover :global(img) {
+    transform: scale(1.05);
+  }
+  .cap {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    padding: 6px 14px 7px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-weight: 520;
+    font-size: 0.9375rem;
+  }
+</style>

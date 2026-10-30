@@ -1,0 +1,319 @@
+---
+import { site } from '../data/site';
+---
+
+<div class="drawer" data-drawer hidden>
+  <div class="scrim" data-list-close></div>
+  <aside class="panel" role="dialog" aria-modal="true" aria-labelledby="list-h" tabindex="-1" data-lenis-prevent>
+    <header class="top">
+      <div>
+        <p class="eyebrow">Your list</p>
+        <h2 id="list-h" class="display">My list</h2>
+      </div>
+      <button type="button" class="x" data-list-close aria-label="Close my list">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+      </button>
+    </header>
+
+    <div class="body">
+      <p class="empty" data-list-empty>
+        Nothing here yet. Browse the shop and tap <strong>Add to my list</strong> on anything you want to see, price
+        or hold for pickup.
+      </p>
+
+      <ul class="items" data-list-items></ul>
+
+      <form class="form" data-list-form hidden>
+        <fieldset class="how">
+          <legend>What would you like us to do?</legend>
+          <label><input type="radio" name="how" value="quote" checked /> <span>Send me a quote</span></label>
+          <label><input type="radio" name="how" value="hold" /> <span>Hold these for pickup</span></label>
+          <label><input type="radio" name="how" value="visit" /> <span>I'll stop in and talk it through</span></label>
+        </fieldset>
+        <label class="field"
+          ><span>Your name</span><input name="name" required autocomplete="name" /></label
+        >
+        <label class="field"
+          ><span>Phone or email</span><input name="contact" required autocomplete="email" /></label
+        >
+        <label class="field"
+          ><span>Notes <em>(room, size, timeline)</em></span><textarea name="notes" rows="3"></textarea></label
+        >
+        <button class="btn" type="submit">Send to the store <span class="arr" aria-hidden="true">→</span></button>
+        <p class="fine">Sample only: nothing is sent anywhere. On the finished site this goes straight to the store.</p>
+      </form>
+
+      <div class="done" data-list-done hidden tabindex="-1">
+        <p class="eyebrow">Sample request</p>
+        <h3 class="display">Thank you<span data-done-name></span>.</h3>
+        <p>
+          On the finished site, your list would land in the store's inbox and they would follow up by phone or email.
+          This is a sample, so nothing was sent.
+        </p>
+        <button type="button" class="btn btn--ghost btn--sm" data-list-close>Back to browsing</button>
+      </div>
+    </div>
+
+    <footer class="foot">
+      <button type="button" class="link" data-list-clear hidden>Clear list</button>
+      <a class="link" href={site.phoneHref}>Call {site.phoneDisplay}</a>
+    </footer>
+  </aside>
+</div>
+
+<style>
+  .drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+  }
+  .drawer[hidden] {
+    display: none;
+  }
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(27 39 36 / 0.55);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    animation: fade 0.35s var(--ease) both;
+  }
+  .panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(460px, 100%);
+    background: var(--porcelain);
+    box-shadow: -40px 0 80px -30px rgb(0 0 0 / 0.5);
+    outline: none;
+    animation: slide 0.5s var(--ease) both;
+  }
+  .top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 26px 26px 18px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+  .top h2 {
+    margin-top: 4px;
+    font-size: 2.4rem;
+  }
+  .x {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid color-mix(in srgb, var(--ink) 40%, transparent);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  }
+  .x:hover {
+    background: var(--ink);
+    color: var(--porcelain);
+  }
+  .body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 26px 28px;
+  }
+  .empty {
+    color: var(--ink-soft);
+  }
+  .empty[hidden] {
+    display: none;
+  }
+
+  .items {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .items :global(li) {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 0 0 1px rgb(34 44 42 / 0.08);
+  }
+  .items :global(.th) {
+    width: 64px;
+    height: 64px;
+    border-radius: 9px;
+    object-fit: cover;
+    background: var(--cream);
+  }
+  .items :global(.nm) {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-weight: 520;
+    font-size: 1.0625rem;
+    line-height: 1.2;
+  }
+  .items :global(.dp) {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .items :global(.rm) {
+    min-width: 44px;
+    min-height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--clay-deep);
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+  .items :global(.rm:hover) {
+    background: var(--cream);
+  }
+
+  .form {
+    display: grid;
+    gap: 16px;
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+  .form[hidden],
+  .done[hidden] {
+    display: none;
+  }
+  .how {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .how legend {
+    margin-bottom: 8px;
+    padding: 0;
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .how label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1.5px solid color-mix(in srgb, var(--ink) 22%, transparent);
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .how label:has(input:checked) {
+    border-color: var(--clay-deep);
+    background: color-mix(in srgb, var(--blush) 40%, transparent);
+  }
+  .how input {
+    accent-color: var(--clay-deep);
+  }
+  .field {
+    display: grid;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+  .field em {
+    font-weight: 400;
+    font-style: normal;
+    color: var(--ink-soft);
+  }
+  .field input,
+  .field textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    border: 1.5px solid color-mix(in srgb, var(--ink) 28%, transparent);
+    border-radius: 12px;
+    background: #fff;
+    font: inherit;
+    font-weight: 400;
+    color: var(--ink);
+  }
+  .field textarea {
+    resize: vertical;
+  }
+  .field input:focus-visible,
+  .field textarea:focus-visible {
+    outline: 3px solid var(--clay-deep);
+    outline-offset: 2px;
+  }
+  .fine {
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+
+  .done {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+    margin-top: 12px;
+    outline: none;
+  }
+  .done h3 {
+    font-size: 2.2rem;
+  }
+
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 26px calc(14px + env(safe-area-inset-bottom));
+    border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+  .link {
+    padding: 8px 2px;
+    border: 0;
+    background: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--clay-deep);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .link[hidden] {
+    display: none;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes slide {
+    from {
+      transform: translateX(40px);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scrim,
+    .panel {
+      animation: none;
+    }
+  }
+</style>

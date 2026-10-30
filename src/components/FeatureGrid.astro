@@ -1,0 +1,115 @@
+---
+import SectionHead from './SectionHead.astro';
+
+interface Item {
+  title: string;
+  copy: string;
+  /** Small mono label above the title, e.g. "Interior". */
+  k?: string;
+}
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  items: Item[];
+  cols?: 2 | 3 | 4;
+  tone?: 'light' | 'cream' | 'pine';
+}
+const { id, eyebrow, title, lede, items, cols = 3, tone = 'light' } = Astro.props;
+const chips = ['#7f927e', '#ddb968', '#c58468', '#9db7c6', '#a8b5a0', '#b47962'];
+---
+
+<section class:list={['band', `tone-${tone}`, { 'band--cream': tone === 'cream', 'band--pine on-dark': tone === 'pine' }]} aria-labelledby={`${id}-h`}>
+  <div class="container">
+    <SectionHead id={`${id}-h`} eyebrow={eyebrow} title={title} lede={lede} tone={tone === 'pine' ? 'dark' : 'light'} split={!!lede} />
+
+    <ul class:list={['grid', `cols-${cols}`]}>
+      {
+        items.map((it, i) => (
+          <li class="card" data-rise style={`--chip:${chips[i % chips.length]}`}>
+            {it.k && <p class="k">{it.k}</p>}
+            <h3>{it.title}</h3>
+            <p class="c">{it.copy}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: clamp(14px, 2vw, 26px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1020px) {
+    .cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 30px 26px 28px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow:
+      0 24px 40px -30px rgb(34 44 42 / 0.5),
+      0 0 0 1px rgb(34 44 42 / 0.08);
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 8px;
+    background: var(--chip);
+  }
+  .k {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 480;
+    font-size: clamp(1.4rem, 1.2rem + 0.7vw, 1.75rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .c {
+    color: var(--ink-soft);
+    font-size: 1rem;
+    text-wrap: pretty;
+  }
+
+  .tone-pine .card {
+    background: rgb(247 244 238 / 0.06);
+    box-shadow: 0 0 0 1px rgb(247 244 238 / 0.16);
+  }
+  .tone-pine .k,
+  .tone-pine .c {
+    color: #c9d3cd;
+  }
+</style>

@@ -1,0 +1,89 @@
+---
+/** The sun glow and floating paint chips behind a hero. Motion is wired in scripts/main.ts. */
+interface Props {
+  /** The inner pages use fewer chips so the photo stays the star. */
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+
+const all = [
+  { x: '-1.8%', y: '12%', r: '-14deg', c: ['#a8b5a0', '#8fa086', '#6f8268'], d: 0.5 },
+  { x: '47%', y: '-4%', r: '9deg', c: ['#f0d9a0', '#ddb968', '#c49c4a'], d: 0.8 },
+  { x: '94%', y: '56%', r: '17deg', c: ['#e3b6a3', '#c58468', '#a8654a'], d: 1.2 },
+  { x: '-2%', y: '78%', r: '-6deg', c: ['#b8cdd9', '#9db7c6', '#7c9aab'], d: 0.7 },
+];
+const chips = compact ? [all[0], all[2]] : all;
+---
+
+<div class="decor" aria-hidden="true">
+  <span class="sun"></span>
+  {
+    chips.map((c) => (
+      <span class="pchip" data-depth={c.d} style={`--x:${c.x};--y:${c.y};--r:${c.r};--c1:${c.c[0]};--c2:${c.c[1]};--c3:${c.c[2]}`}>
+        <i></i><i></i><i></i><b></b>
+      </span>
+    ))
+  }
+</div>
+
+<style>
+  .decor {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .sun {
+    position: absolute;
+    right: -10%;
+    top: -14%;
+    width: min(70vw, 820px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, #f3dfae 0%, rgb(243 223 174 / 0.55) 45%, rgb(243 223 174 / 0) 100%);
+  }
+  .pchip {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 26px;
+    width: 54px;
+    height: 150px;
+    border-radius: 5px;
+    overflow: hidden;
+    transform: rotate(var(--r));
+    box-shadow: 0 18px 30px -16px rgb(34 44 42 / 0.45), 0 0 0 1px rgb(34 44 42 / 0.06);
+    opacity: 0.9;
+  }
+  .pchip i:nth-child(1) {
+    background: var(--c1);
+  }
+  .pchip i:nth-child(2) {
+    background: var(--c2);
+  }
+  .pchip i:nth-child(3) {
+    background: var(--c3);
+  }
+  .pchip b {
+    position: relative;
+    background: #fff;
+  }
+  .pchip b::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: var(--porcelain);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.35) inset;
+  }
+  @media (max-width: 1019px) {
+    .pchip {
+      display: none;
+    }
+  }
+</style>

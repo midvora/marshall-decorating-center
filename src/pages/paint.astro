@@ -1,0 +1,213 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import PageHero from '../components/PageHero.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import Quote from '../components/Quote.astro';
+import Split from '../components/Split.astro';
+import Steps from '../components/Steps.astro';
+import SectionHead from '../components/SectionHead.astro';
+import RoomStudio from '../components/RoomStudio.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { url } from '../lib/url';
+
+/* The Benjamin Moore lines the store lists with the Benjamin Moore store locator. Short, plain descriptions. */
+const lines = [
+  { k: 'Interior', title: 'Regal Select', copy: 'A durable, easy-to-clean finish for everyday walls and ceilings.' },
+  { k: 'Exterior', title: 'Regal Select Exterior', copy: 'Weather-ready color for siding, trim and doors.' },
+  { k: 'Trim & cabinets', title: 'Advance', copy: 'A smooth, hard finish for cabinets, trim and furniture.' },
+  { k: 'Stain', title: 'Woodluxe', copy: 'Exterior stain that lets the wood show through.' },
+  { k: 'Tough jobs', title: 'Corotech', copy: 'Hard-working coatings for high-traffic and commercial spaces.' },
+  { k: 'Specialty', title: 'Insl-X', copy: 'Primers and specialty coatings to prep the surface right.' },
+];
+---
+
+<Base
+  title="Paint & color | Marshall Decorating Center (unofficial concept by Midvora)"
+  description="Benjamin Moore paint, mixed in store in a very wide range of colors, plus wallpaper and in-store decorating help at Marshall Decorating Center in Marshall, Minnesota."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <PageHero
+      crumb="Paint & color"
+      eyebrow="Paint, stain & wallpaper"
+      title="Benjamin Moore, <em>mixed right here.</em>"
+      lede="We sell only Benjamin Moore, and we can mix a very wide range of colors in the store. Bring a photo, a chip or a fabric, and a decorator will help you narrow it down."
+      photo="paintWall"
+      pos="50% 24%"
+    >
+      <a class="btn" href={url('/shop/?dept=paint')}>Shop paint &amp; wallpaper <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn--ghost" href={url('/visit/')}>Talk to a decorator</a>
+    </PageHero>
+
+    <FeatureGrid
+      id="why"
+      eyebrow="Why shop a paint store"
+      title="Color is easier <em>with a person.</em>"
+      cols={4}
+      tone="cream"
+      items={[
+        { k: 'One brand', title: 'Benjamin Moore only', copy: 'We focus on one brand and know it inside and out.' },
+        { k: 'Help', title: 'An in-store decorator', copy: 'Talk through the room, the light and the mood before you commit to a can.' },
+        { k: 'Mixed here', title: 'A very wide range of colors', copy: 'Mixed in the store, matched to your chip or your fabric.' },
+        { k: 'Walls & more', title: 'Wallpaper too', copy: 'Books and rolls at the wallpaper counter, for the wall that deserves drama.' },
+      ]}
+    />
+
+    <section class="band" aria-labelledby="lines-h">
+      <div class="container">
+        <SectionHead
+          id="lines-h"
+          eyebrow="What we carry"
+          title="The right paint <em>for the surface.</em>"
+          lede="Interior, exterior, trim and stain. Ask which line fits your project, and we will point you to it."
+          split
+        />
+        <ul class="lines">
+          {
+            lines.map((l, i) => (
+              <li data-rise style={`--n:${i}`}>
+                <p class="k">{l.k}</p>
+                <h3>{l.title}</h3>
+                <p>{l.copy}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <Quote who="Todd Schroeder" role="Owner, Marshall Decorating Center">
+      The most bang you can get out of a decorating budget is a gallon of paint.
+    </Quote>
+
+    <section class="band try" aria-labelledby="try-h">
+      <div class="container tg">
+        <div class="tcopy">
+          <SectionHead id="try-h" eyebrow="Try it" title="Picture a color <em>in a room.</em>" lede="Pick a wall, a floor and a fabric and watch the room change. These are original sample colors to play with, not Benjamin Moore colors. Your decorator helps you find the real match." />
+          <a class="btn btn--ghost" href={url('/visit/')}>Bring your favorite to the store</a>
+        </div>
+        <div class="stage"><RoomStudio /></div>
+      </div>
+    </section>
+
+    <Split
+      id="wallpaper"
+      eyebrow="Wallpaper"
+      title="For the wall that <em>deserves a little drama.</em>"
+      photo="wallpaperBar"
+      pos="60% 50%"
+      photo2="wallpaperBlue"
+      pos2="50% 40%"
+      reverse
+      tone="cream"
+    >
+      <p>
+        Pattern and texture change a room faster than almost anything. Browse the wallpaper books and the rack of rolls
+        at the wallpaper counter, and see the patterns hung on the showroom walls.
+      </p>
+      <ul>
+        <li>Botanicals, geometrics, florals and quiet textures</li>
+        <li>Hung on real walls in the store, so you can judge the scale</li>
+        <li>Ask about samples to take home and try in your own light</li>
+      </ul>
+      <Fragment slot="actions">
+        <a class="btn" href={url('/shop/?dept=paint')}>See wallpaper in the shop <span class="arr" aria-hidden="true">→</span></a>
+      </Fragment>
+    </Split>
+
+    <Steps
+      id="how"
+      eyebrow="How it works"
+      title="From a rough idea <em>to a finished room.</em>"
+      tone="light"
+      steps={[
+        { title: 'Bring something', copy: 'A photo of the room, a paint chip, a fabric. Or just an idea.' },
+        { title: 'Talk it through', copy: 'A decorator helps you think about light, mood and what stays in the room.' },
+        { title: 'Narrow it down', copy: 'Compare colors and finishes side by side on the color wall.' },
+        { title: 'Mix and go', copy: 'We mix it right here, and you get started on the weekend.' },
+      ]}
+    />
+
+    <CtaBand title="Ready to <em>pick a color?</em>" text="Stop in with a photo or a chip. The color wall is waiting." />
+  </main>
+  <Footer />
+  <MobileBar />
+</Base>
+
+<style>
+  .lines {
+    display: grid;
+    gap: clamp(14px, 2vw, 24px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .lines {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1020px) {
+    .lines {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .lines li {
+    display: grid;
+    gap: 8px;
+    padding: 26px 26px 28px;
+    border-radius: 14px;
+    border: 1.5px solid color-mix(in srgb, var(--ink) 18%, transparent);
+    background: color-mix(in srgb, var(--paper) 70%, transparent);
+    transition: transform 0.5s var(--ease), background 0.5s var(--ease), border-color 0.5s var(--ease);
+  }
+  .lines li:hover {
+    transform: translateY(-4px);
+    background: #fff;
+    border-color: var(--clay);
+  }
+  .k {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--clay-deep);
+  }
+  .lines h3 {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 480;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .lines p:not(.k) {
+    color: var(--ink-soft);
+  }
+
+  .tg {
+    display: grid;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+  }
+  @media (min-width: 1020px) {
+    .tg {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    }
+  }
+  .tcopy {
+    display: grid;
+    gap: 22px;
+    justify-items: start;
+  }
+  .tcopy :global(.head) {
+    margin-bottom: 0;
+  }
+  .stage {
+    min-width: 0;
+  }
+</style>

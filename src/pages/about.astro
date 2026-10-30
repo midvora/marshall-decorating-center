@@ -1,0 +1,237 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import PageHero from '../components/PageHero.astro';
+import Split from '../components/Split.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import Quote from '../components/Quote.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+const timeline = [
+  { when: String(site.founded), title: 'Opens on Main Street', copy: 'Walt Schroeder starts the store with local businessman Art Reese. Walt later buys Art’s half, and his wife, Liz, keeps the books.' },
+  { when: '1987', title: 'Todd joins the team', copy: 'A Marshall native, Todd Schroeder comes home to work in his father’s store.' },
+  { when: '2000', title: 'The second generation', copy: 'Todd and his wife, Beth, buy the store from his father and keep it a family business.' },
+  { when: 'Today', title: 'Flooring becomes a department of its own', copy: 'Vinyl plank and tile grow from a small display into tens of thousands of square feet on the floor.' },
+];
+
+const team = [
+  { initials: 'TS', name: 'Todd Schroeder', role: 'Owner', chip: '#9c5a44', fg: '#fff' },
+  { initials: 'BS', name: 'Beth Schroeder', role: 'Owner', chip: '#5f7a62', fg: '#fff' },
+  { initials: 'KH', name: 'Kelly Hennen', role: 'Longtime team member', chip: '#ddb968', fg: '#222c2a' },
+];
+---
+
+<Base
+  title="About | Marshall Decorating Center (unofficial concept by Midvora)"
+  description="Marshall Decorating Center has been a family-owned decorating store on Main Street in Marshall, Minnesota since 1972. An unofficial design concept."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <PageHero
+      crumb="About"
+      eyebrow="About us · Marshall, Minnesota"
+      title={`Family owned on Main Street <em>since ${site.founded}.</em>`}
+      lede="For more than fifty years, neighbors in Marshall have come here for paint, floors, window treatments and the little things that make a house feel like home."
+      photo="owners"
+      pos="50% 26%"
+    >
+      <a class="btn" href={url('/visit/')}>Plan a visit <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn--ghost" href={url('/shop/')}>See what is in store</a>
+    </PageHero>
+
+    <Split
+      id="story"
+      eyebrow="Our story"
+      title="A store that started with <em>two partners and a good idea.</em>"
+      photo="showroomWide"
+      pos="35% 50%"
+      photo2="storefront"
+      pos2="30% 50%"
+    >
+      <p>
+        Marshall Decorating Center opened in {site.founded}, started by Walt Schroeder and a local business partner.
+        It has been family owned ever since: Walt’s son Todd joined in 1987, and in 2000 he and his wife, Beth,
+        took the store over.
+      </p>
+      <p>
+        The store has grown with the town. Paint is still the heart of it, and it is still only Benjamin Moore. But
+        flooring, window treatments, furniture and home décor now fill the floor, and the displays change with every
+        season.
+      </p>
+      <p>What has not changed is the way people are helped: with time, with real answers and with a friendly hello.</p>
+      <Fragment slot="actions">
+        <a class="btn btn--ghost" href={url('/promotions/')}>See this week’s promotion</a>
+      </Fragment>
+    </Split>
+
+    <section class="band band--pine on-dark tl" aria-labelledby="tl-h">
+      <div class="container">
+        <SectionHead id="tl-h" eyebrow="Through the years" title="From the first can of paint <em>to fifty thousand square feet of floor.</em>" tone="dark" />
+        <ol class="line">
+          {
+            timeline.map((t) => (
+              <li data-rise>
+                <p class="when">{t.when}</p>
+                <h3>{t.title}</h3>
+                <p class="what">{t.copy}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <FeatureGrid
+      id="values"
+      eyebrow="What you can count on"
+      title="Four things that have <em>stayed the same.</em>"
+      cols={4}
+      items={[
+        { k: 'Paint', title: 'Benjamin Moore, only', copy: 'One brand, done well, mixed in the store in a very wide range of colors.' },
+        { k: 'Help', title: 'A decorator on the floor', copy: 'Bring a photo, a chip or a fabric. We will start with what you are working on.' },
+        { k: 'Selection', title: 'Everything under one roof', copy: 'Paint, wallpaper, flooring, window treatments, furniture and décor.' },
+        { k: 'Local', title: 'Right on Main Street', copy: 'Easy to find, with parking in the front and back lots.' },
+      ]}
+    />
+
+    <Quote who="Todd Schroeder" role="Owner, Marshall Decorating Center">
+      People have been loyal, and they appreciate our customer service and general knowledge.
+    </Quote>
+
+    <section class="band" aria-labelledby="team-h">
+      <div class="container">
+        <SectionHead id="team-h" eyebrow="The people" title="Say hello to <em>the team.</em>" lede="The faces behind the counter, the color wall and the flooring aisles." split />
+        <ul class="team">
+          {
+            team.map((p) => (
+              <li class="chip" data-rise style={`--c:${p.chip};--fg:${p.fg}`}>
+                <span class="swatch" aria-hidden="true">{p.initials}</span>
+                <span class="label">
+                  <strong>{p.name}</strong>
+                  <span>{p.role}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <CtaBand title="Come meet us <em>on Main Street.</em>" text="Bring a photo, a paint chip or just an idea, and say hello." />
+  </main>
+  <Footer />
+  <MobileBar />
+</Base>
+
+<style>
+  .tl .line {
+    display: grid;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 900px) {
+    .tl .line {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: clamp(20px, 2.6vw, 40px);
+    }
+  }
+  .tl li {
+    position: relative;
+    padding-top: 28px;
+    border-top: 1.5px solid rgb(247 244 238 / 0.3);
+  }
+  .tl li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -7px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--wheat);
+  }
+  .when {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 380;
+    font-style: italic;
+    font-size: clamp(2.2rem, 1.6rem + 2vw, 3.2rem);
+    line-height: 1;
+    color: var(--wheat);
+  }
+  .tl h3 {
+    margin-top: 10px;
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 480;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .what {
+    margin-top: 8px;
+    color: #c9d3cd;
+    font-size: 1rem;
+  }
+
+  .team {
+    display: grid;
+    gap: clamp(16px, 2.4vw, 28px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .team {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .chip {
+    display: grid;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow:
+      0 30px 44px -30px rgb(34 44 42 / 0.55),
+      0 0 0 1px rgb(34 44 42 / 0.08);
+    transition: transform 0.6s var(--ease);
+  }
+  .chip:hover {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+  .swatch {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 10;
+    background: var(--c);
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 144;
+    font-size: clamp(2.6rem, 2rem + 2vw, 3.8rem);
+    font-weight: 400;
+    color: var(--fg, #fff);
+    letter-spacing: -0.02em;
+  }
+  .label {
+    display: grid;
+    gap: 2px;
+    padding: 16px 20px 20px;
+  }
+  .label strong {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 500;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+  }
+  .label span {
+    color: var(--ink-soft);
+    font-size: 0.9375rem;
+  }
+</style>

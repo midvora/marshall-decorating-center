@@ -5,6 +5,8 @@ import Lenis from 'lenis';
 import { initRoom } from './room';
 import { initStarter } from './starter';
 import { initGate } from './gate';
+import { initList, initShop, initSampleForms } from './list';
+import { initStatus } from './status';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -102,11 +104,20 @@ document.addEventListener('keydown', (e) => {
 /* ---------- interactive pieces ---------- */
 initRoom(reduced, whenOpen);
 initStarter(reduced);
+initStatus();
+initShop();
+initSampleForms();
+initList((open) => {
+  /* freeze the page behind the "My list" drawer */
+  if (open) lenis?.stop();
+  else if (!gated) lenis?.start();
+  root.classList.toggle('no-scroll', open);
+});
 
 /* ---------- mobile action bar: after the hero, hidden over the visit block ---------- */
 const mbar = document.querySelector<HTMLElement>('[data-mbar]');
 const hero = document.querySelector<HTMLElement>('[data-hero]');
-const visit = document.getElementById('visit');
+const visit = document.querySelector<HTMLElement>('[data-visit]');
 if (mbar && hero && visit) {
   let heroOut = false;
   let visitIn = false;
@@ -130,6 +141,7 @@ if (!reduced()) {
       y: 34,
       duration: 1,
       ease: 'power3.out',
+      clearProps: 'transform',
       scrollTrigger: { trigger: el, start: 'top 90%', once: true },
     });
   });
@@ -176,14 +188,58 @@ if (!reduced()) {
     scrollTrigger: { trigger: '.foot', start: 'top 95%', once: true },
   });
 
-  /* hero: sun drifts, chips float with the pointer and the scroll */
-  gsap.to('.hero .sun', {
-    yPercent: 18,
-    ease: 'none',
-    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
+  /* promo cards: pinned up one after another */
+  gsap.utils.toArray<HTMLElement>('[data-promo-card]').forEach((card, i) => {
+    gsap.from(card, {
+      opacity: 0,
+      y: 60,
+      rotation: 0,
+      duration: 1,
+      delay: i * 0.12,
+      ease: 'power3.out',
+      clearProps: 'transform',
+      scrollTrigger: { trigger: card, start: 'top 92%', once: true },
+    });
   });
+
+  /* shop cards and other staggered grids */
+  gsap.utils.toArray<HTMLElement>('[data-rise]').forEach((el) => {
+    gsap.from(el, {
+      opacity: 0,
+      y: 40,
+      duration: 0.9,
+      ease: 'power3.out',
+      clearProps: 'transform',
+      scrollTrigger: { trigger: el, start: 'top 94%', once: true },
+    });
+  });
+
+  /* the hero photo drifts a touch slower than the page */
+  const heroPhoto = document.querySelector<HTMLElement>('[data-hero-photo] img');
+  if (heroPhoto) {
+    gsap.fromTo(
+      heroPhoto,
+      { scale: 1.1, yPercent: -3 },
+      {
+        scale: 1.02,
+        yPercent: 4,
+        ease: 'none',
+        scrollTrigger: { trigger: '[data-hero-photo]', start: 'top 90%', end: 'bottom top', scrub: true },
+      },
+    );
+  }
+
+  /* hero: sun drifts, chips float with the pointer and the scroll */
+  if (document.querySelector('.hero .sun')) {
+    gsap.to('.hero .sun', {
+      yPercent: 18,
+      ease: 'none',
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
+    });
+  }
   const chips = gsap.utils.toArray<HTMLElement>('.pchip');
   chips.forEach((c) => {
+    if (!c.closest('.hero')) return;
     const depth = Number(c.dataset.depth ?? 1);
     gsap.to(c, {
       y: -60 * depth,

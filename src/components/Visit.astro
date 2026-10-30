@@ -1,22 +1,45 @@
 ---
-import { site } from '../data/site';
+import Photo from './Photo.astro';
+import StatusBadge from './StatusBadge.astro';
+import { site, hours } from '../data/site';
+
+interface Props {
+  /** The visit page uses this as its h1; on the home page it is an h2. */
+  level?: 'h1' | 'h2';
+}
+const { level = 'h2' } = Astro.props;
+const Heading = level;
 ---
 
-<section class="visit on-dark" id="visit" aria-labelledby="visit-h" tabindex="-1">
+<section class="visit on-dark" id="visit" aria-labelledby="visit-h" tabindex="-1" data-visit>
   <div class="container grid">
     <div class="info">
       <p class="eyebrow" data-reveal>Visit</p>
-      <h2 id="visit-h" class="display" data-split>Come see what <em>works in person.</em></h2>
+      <Heading id="visit-h" class="display" data-split>Come see what <em>works in person.</em></Heading>
+
+      <StatusBadge tone="dark" />
 
       <address class="addr" data-reveal>
         <span class="k">Find us</span>
         <span class="a1">{site.street}</span>
         <span class="a2">{site.cityLine}</span>
+        <span class="park">{site.parking}</span>
         <span class="k k2">Call</span>
         <a class="ph" href={site.phoneHref}>{site.phoneDisplay}</a>
         <span class="k k2">Hours</span>
-        <span class="hrs">{site.hoursNote}</span>
       </address>
+
+      <dl class="hours" data-reveal>
+        {
+          hours.map((h) => (
+            <div class="row" data-hours-row={h.days.join(',')}>
+              <dt>{h.label}</dt>
+              <dd>{h.open ? `${h.open} – ${h.close}` : 'Closed'}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="hrs" data-reveal>{site.hoursNote}</p>
 
       <div class="actions" data-reveal>
         <a class="btn btn--light" href={site.directionsHref} target="_blank" rel="noopener noreferrer">
@@ -79,6 +102,10 @@ import { site } from '../data/site';
         </p>
         <p class="note">Illustrative map, not to scale</p>
       </div>
+      <figure class="polaroid">
+        <div class="shot"><Photo name="storefront" widths={[320, 480]} sizes="240px" pos="30% 50%" /></div>
+        <figcaption>Look for the blue awning</figcaption>
+      </figure>
     </div>
   </div>
 </section>
@@ -122,10 +149,10 @@ import { site } from '../data/site';
   .info .eyebrow {
     color: #f1dccf;
   }
-  .info h2 {
+  .info :is(h1, h2) {
     font-size: clamp(2.6rem, 1rem + 5.8vw, 6rem);
   }
-  .info h2 em {
+  .info :is(h1, h2) :global(em) {
     color: var(--wheat);
   }
 
@@ -170,10 +197,78 @@ import { site } from '../data/site';
   .ph:hover {
     text-decoration-color: var(--wheat);
   }
-  .hrs {
-    margin-top: 6px;
-    font-size: 1.0625rem;
+  .park {
+    margin-top: 8px;
+    font-size: 1rem;
     color: #f7ece4;
+  }
+  .hours {
+    display: grid;
+    width: 100%;
+    max-width: 440px;
+    margin: -6px 0 0;
+  }
+  .row {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0 10px 16px;
+    border-bottom: 1px solid rgb(247 244 238 / 0.2);
+    font-size: 1.0625rem;
+  }
+  .row dt,
+  .row dd {
+    margin: 0;
+  }
+  .row[data-today] {
+    font-weight: 700;
+  }
+  .row[data-today]::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    border-radius: 50%;
+    background: var(--wheat);
+  }
+  .hrs {
+    margin-top: -6px;
+    max-width: 30em;
+    font-size: 0.875rem;
+    color: #f1dccf;
+  }
+
+  .polaroid {
+    position: absolute;
+    left: clamp(-8px, -1vw, 0px);
+    bottom: clamp(-28px, -3vw, -14px);
+    z-index: 2;
+    width: clamp(140px, 17vw, 190px);
+    margin: 0;
+    padding: 8px 8px 12px;
+    border-radius: 6px;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 26px 40px -18px rgb(0 0 0 / 0.6);
+    transform: rotate(-5deg);
+  }
+  .shot {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 3px;
+  }
+  .polaroid figcaption {
+    margin-top: 10px;
+    text-align: center;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-variation-settings: 'opsz' 36;
+    font-size: 0.9375rem;
+    line-height: 1.2;
   }
 
   .actions {
@@ -191,6 +286,7 @@ import { site } from '../data/site';
   }
 
   .mapcard {
+    position: relative;
     padding: clamp(8px, 1.2vw, 14px);
     border-radius: var(--radius);
     background: var(--paper);

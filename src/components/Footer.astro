@@ -1,5 +1,8 @@
 ---
-import { site } from '../data/site';
+import { site, hours, nav } from '../data/site';
+import { url } from '../lib/url';
+
+const links = [...nav, { href: '/visit/', label: 'Visit' }];
 ---
 
 <footer class="foot on-dark">
@@ -13,16 +16,31 @@ import { site } from '../data/site';
       <p class="name">{site.name}</p>
       <p class="addr">
         {site.address}<br />
-        <a href={site.phoneHref}>{site.phoneDisplay}</a>
+        <a href={site.phoneHref}>{site.phoneDisplay}</a><br />
+        <a href={site.facebookHref} target="_blank" rel="noopener noreferrer"
+          >Follow along on Facebook<span class="sr-only"> (opens in a new tab)</span></a
+        >
       </p>
     </div>
 
     <nav class="links" aria-label="Footer">
-      <a href="#explore">Explore</a>
-      <a href="#approach">Our approach</a>
-      <a href="#visit">Visit</a>
+      {links.map((l) => <a href={url(l.href)}>{l.label}</a>)}
       <a href="#top">Back to top ↑</a>
     </nav>
+
+    <div class="hrs">
+      <p class="k">Hours</p>
+      <dl>
+        {
+          hours.map((h) => (
+            <div>
+              <dt>{h.label}</dt>
+              <dd>{h.open ? `${h.open} – ${h.close}` : 'Closed'}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
 
     <div class="legal">
       <p>
@@ -47,8 +65,16 @@ import { site } from '../data/site';
   }
   @media (min-width: 900px) {
     .inner {
-      grid-template-columns: 1.1fr 0.8fr 1.3fr;
+      grid-template-columns: 1.15fr 0.7fr 0.95fr;
       align-items: start;
+    }
+    .legal {
+      grid-column: 1 / -1;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      padding-top: 28px;
+      border-top: 1px solid rgb(247 244 238 / 0.14);
+      max-width: none;
     }
   }
   .name {
@@ -61,7 +87,7 @@ import { site } from '../data/site';
   .addr {
     margin-top: 12px;
     color: #cdd5d0;
-    line-height: 1.7;
+    line-height: 1.8;
   }
   .addr a,
   .links a {
@@ -75,9 +101,35 @@ import { site } from '../data/site';
   }
   .links {
     display: grid;
-    gap: 8px;
-    justify-items: start;
+    grid-template-columns: repeat(2, max-content);
+    gap: 8px 36px;
+    justify-content: start;
     font-weight: 500;
+  }
+  .k {
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #9fa9a4;
+  }
+  .hrs dl {
+    display: grid;
+    gap: 6px;
+    margin: 10px 0 0;
+    color: #cdd5d0;
+    font-size: 0.9375rem;
+  }
+  .hrs dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 280px;
+  }
+  .hrs dt,
+  .hrs dd {
+    margin: 0;
   }
   .legal {
     display: grid;

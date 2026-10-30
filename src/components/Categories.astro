@@ -1,73 +1,62 @@
 ---
+import Photo from './Photo.astro';
+import { url } from '../lib/url';
+
 const cards = [
   {
     no: '01',
     title: 'Paint & color',
-    copy: "Explore shades and finishes for the space you're imagining.",
-    tint: '#eadfcb',
-    key: 'paint',
+    copy: 'Benjamin Moore, mixed right here in a very wide range of colors.',
+    photo: 'paintWall',
+    pos: '50% 30%',
+    href: '/paint/',
+    more: 'Explore paint & color',
   },
   {
     no: '02',
     title: 'Wallpaper',
     copy: 'Pattern and texture for the wall that deserves a little drama.',
-    tint: '#cfd8c6',
-    key: 'paper',
+    photo: 'wallpaperBlue',
+    pos: '50% 38%',
+    href: '/paint/#wallpaper',
+    more: 'See wallpaper',
   },
   {
     no: '03',
     title: 'Flooring',
-    copy: 'Find a surface that fits the look and life of your room.',
-    tint: '#e9d6a8',
-    key: 'floor',
+    copy: 'Vinyl plank and tile, hardwood and more, by the stack.',
+    photo: 'floorHardwood',
+    pos: '50% 62%',
+    href: '/flooring/',
+    more: 'Explore flooring',
   },
   {
     no: '04',
     title: 'Window treatments',
     copy: 'Bring light, privacy and texture into balance.',
-    tint: '#c9dae1',
-    key: 'window',
+    photo: 'windowSheersDrapes',
+    pos: '45% 50%',
+    href: '/window-treatments/',
+    more: 'Explore window treatments',
   },
   {
     no: '05',
     title: 'Décor & furnishings',
-    copy: 'Pull the details together, one thoughtful choice at a time.',
-    tint: '#efd0c5',
-    key: 'decor',
+    copy: 'Chairs, chests, art and lamps. Pull it together, one thoughtful choice at a time.',
+    photo: 'seatingHeron',
+    pos: '50% 45%',
+    href: '/home-decor/',
+    more: 'Explore décor',
   },
   {
     no: '06',
     title: 'Gifts & accessories',
     copy: 'Something small and thoughtful for a host, a home or yourself.',
-    tint: '#2b4339',
-    key: 'gift',
-    dark: true,
+    photo: 'wallpaperBar',
+    pos: '78% 55%',
+    href: '/home-decor/#gifts',
+    more: 'See gifts',
   },
-];
-
-const chipSets = [
-  ['#cbd6c3', '#a8b5a0', '#7f927e'],
-  ['#d2e0e8', '#9db7c6', '#6f93a8'],
-  ['#f2e1b5', '#ddb968', '#c29a3f'],
-  ['#ebc3b1', '#c58468', '#9f5e45'],
-  ['#9daaa9', '#6c7e80', '#46575a'],
-];
-const fanAngles = [
-  { a: -30, h: -58 },
-  { a: -15, h: -29 },
-  { a: 0, h: 0 },
-  { a: 15, h: 29 },
-  { a: 30, h: 58 },
-];
-const planks = [
-  ['#c99a5e', 0],
-  ['#8a5a38', 18],
-  ['#d9be92', -12],
-  ['#6a4631', 22],
-  ['#b98a5e', -18],
-  ['#3f3029', 8],
-  ['#cdbba0', -8],
-  ['#a9784a', 16],
 ] as const;
 ---
 
@@ -77,222 +66,25 @@ const planks = [
       <p class="eyebrow" data-reveal>Explore the store</p>
       <h2 id="explore-h" class="display" data-split>Start with a color. <em>Finish with a room.</em></h2>
       <p class="lede" data-reveal>
-        Different projects, one place to begin. Browse the kinds of decisions we can talk through in store.
+        Six departments, one friendly store. These are real corners of the showroom on West Main Street. Tap any one to
+        see what is on the floor.
       </p>
     </header>
 
     <div class="grid" data-stagger>
       {
         cards.map((c) => (
-          <article class:list={['card', { 'card--dark': c.dark }]} style={`--tint:${c.tint}`} data-card>
-            <div class="art" aria-hidden="true">
-              {c.key === 'paint' && (
-                <svg viewBox="0 0 420 300">
-                  <ellipse cx="170" cy="286" rx="140" ry="7" fill="#000" opacity="0.1" />
-                  <g class="fan">
-                    {chipSets.map((set, i) => (
-                      <g class="pc" style={`--a:${fanAngles[i].a}deg;--h:${fanAngles[i].h}deg`}>
-                        <rect x="134" y="60" width="72" height="214" rx="5" fill="#fff" />
-                        <path d="M134 106 V65 a5 5 0 0 1 5 -5 h62 a5 5 0 0 1 5 5 V106Z" fill={set[0]} />
-                        <rect x="134" y="106" width="72" height="46" fill={set[1]} />
-                        <rect x="134" y="152" width="72" height="46" fill={set[2]} />
-                        <rect x="146" y="212" width="40" height="4" rx="2" fill="#cfc9bd" />
-                        <rect x="146" y="222" width="28" height="4" rx="2" fill="#e0dbd0" />
-                        <circle cx="170" cy="258" r="5.5" fill="#d9d2c3" stroke="#a79f8e" stroke-width="1.2" />
-                      </g>
-                    ))}
-                  </g>
-                  <g transform="translate(300 150)">
-                    <path d="M4 40 C 4 -10, 90 -10, 90 40" fill="none" stroke="#3b3833" stroke-width="3" />
-                    <path d="M2 28 V112 a43 10 0 0 0 86 0 V28Z" fill="#ece7dc" />
-                    <path d="M2 28 V112 a43 10 0 0 0 86 0 V28Z" fill="#000" opacity="0.06" />
-                    <ellipse cx="45" cy="28" rx="43" ry="10" fill="#d4cec1" />
-                    <ellipse cx="45" cy="28" rx="35" ry="7" fill="#b47962" />
-                    <path d="M12 30 q0 34 7 46 q7 -12 7 -46Z" fill="#b47962" />
-                    <path d="M66 31 q0 16 5 22 q5 -6 5 -22Z" fill="#b47962" />
-                    <rect x="12" y="58" width="66" height="34" rx="3" fill="#b47962" />
-                    <rect x="20" y="66" width="34" height="4" rx="2" fill="#fff" opacity="0.85" />
-                    <rect x="20" y="75" width="46" height="4" rx="2" fill="#fff" opacity="0.55" />
-                  </g>
-                </svg>
-              )}
-
-              {c.key === 'paper' && (
-                <svg viewBox="0 0 420 300">
-                  <defs>
-                    <pattern id="c-leaf" width="58" height="66" patternUnits="userSpaceOnUse">
-                      <rect width="58" height="66" fill="#8aa082" />
-                      <path d="M12 26 C 4 14, 14 2, 26 6 C 28 18, 22 26, 12 26Z" fill="#b8c9ae" />
-                      <path d="M41 62 C 33 50, 43 38, 55 42 C 57 54, 51 62, 41 62Z" fill="#b8c9ae" transform="rotate(8 44 52)" />
-                      <path d="M12 26 L 24 8" stroke="#8aa082" stroke-width="1.4" />
-                      <circle cx="42" cy="18" r="3.2" fill="#ece5cf" />
-                      <circle cx="14" cy="52" r="2.4" fill="#ece5cf" />
-                    </pattern>
-                    <linearGradient id="c-cyl" x1="0" x2="1">
-                      <stop offset="0" stop-color="#000" stop-opacity="0.28" />
-                      <stop offset="0.35" stop-color="#fff" stop-opacity="0.16" />
-                      <stop offset="1" stop-color="#000" stop-opacity="0.32" />
-                    </linearGradient>
-                  </defs>
-                  <g class="sheet">
-                    <path d="M86 28 H394 V212 L330 274 H86Z" fill="#000" opacity="0.12" transform="translate(4 6)" />
-                    <path d="M86 28 H394 V212 L330 274 H86Z" fill="url(#c-leaf)" />
-                    <path class="flap" d="M330 274 L394 212 L346 204Z" fill="#efe9da" />
-                    <path d="M330 274 L394 212 L346 204Z" fill="#000" opacity="0.08" />
-                  </g>
-                  <path d="M24 40 V264 a36 10 0 0 0 72 0 V40Z" fill="url(#c-leaf)" />
-                  <path d="M24 40 V264 a36 10 0 0 0 72 0 V40Z" fill="url(#c-cyl)" />
-                  <ellipse cx="60" cy="40" rx="36" ry="10" fill="#f1ebdc" />
-                  <ellipse cx="60" cy="40" rx="14" ry="4" fill="#6e6a5e" />
-                </svg>
-              )}
-
-              {c.key === 'floor' && (
-                <svg viewBox="0 0 420 300">
-                  <rect x="52" y="14" width="10" height="268" rx="3" fill="#4a3a2c" />
-                  <rect x="358" y="14" width="10" height="268" rx="3" fill="#4a3a2c" />
-                  {planks.map(([tone, dx], i) => (
-                    <g class="pl" style={`--dx:${dx}px;--i:${i}`}>
-                      <rect x="62" y={22 + i * 31} width="296" height="25" rx="3" fill={tone} />
-                      <rect x="62" y={22 + i * 31} width="296" height="25" rx="3" fill="#fff" opacity={i % 2 ? 0.06 : 0} />
-                      <path d={`M80 ${32 + i * 31} q 70 -3 130 1 t 120 -1 M96 ${40 + i * 31} q 60 2 120 -1`} stroke="#000" stroke-opacity="0.16" stroke-width="1" fill="none" />
-                      <rect x="346" y={22 + i * 31} width="12" height="25" rx="3" fill="#000" opacity="0.16" />
-                    </g>
-                  ))}
-                </svg>
-              )}
-
-              {c.key === 'window' && (
-                <svg viewBox="0 0 420 300">
-                  <defs>
-                    <linearGradient id="c-sky" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0" stop-color="#9fc3d8" />
-                      <stop offset="1" stop-color="#f6ecd2" />
-                    </linearGradient>
-                    <pattern id="c-fold" width="14" height="20" patternUnits="userSpaceOnUse">
-                      <rect width="14" height="20" fill="#000" opacity="0" />
-                      <path d="M0 0 H5 V20 H0Z" fill="#000" opacity="0.14" />
-                      <path d="M8 0 H11 V20 H8Z" fill="#fff" opacity="0.14" />
-                    </pattern>
-                  </defs>
-                  <rect x="112" y="40" width="196" height="200" rx="4" fill="#fbf8f1" />
-                  <rect x="124" y="52" width="172" height="176" fill="url(#c-sky)" />
-                  <circle cx="162" cy="96" r="14" fill="#fff6d2" />
-                  <path d="M124 196 Q 170 176 210 190 T 296 182 V 228 H 124Z" fill="#a9bd8f" />
-                  <path d="M124 210 Q 180 194 230 206 T 296 200 V 228 H 124Z" fill="#7f9a66" />
-                  <rect x="206" y="52" width="6" height="176" fill="#fbf8f1" />
-                  <rect x="124" y="136" width="172" height="6" fill="#fbf8f1" />
-                  <rect x="102" y="238" width="216" height="12" rx="3" fill="#f1eadb" />
-                  <rect x="124" y="52" width="172" height="176" fill="#fff" opacity="0.26" />
-                  <g class="cl cl--l">
-                    <path d="M82 34 H168 L172 262 Q 128 272 84 262Z" fill="#b25a3c" />
-                    <path d="M82 34 H168 L172 262 Q 128 272 84 262Z" fill="url(#c-fold)" />
-                  </g>
-                  <g class="cl cl--r">
-                    <path d="M252 34 H338 L336 262 Q 294 272 250 262Z" fill="#b25a3c" />
-                    <path d="M252 34 H338 L336 262 Q 294 272 250 262Z" fill="url(#c-fold)" />
-                  </g>
-                  <rect x="64" y="24" width="292" height="7" rx="3.5" fill="#3b3833" />
-                  <circle cx="64" cy="27.5" r="8" fill="#3b3833" />
-                  <circle cx="356" cy="27.5" r="8" fill="#3b3833" />
-                </svg>
-              )}
-
-              {c.key === 'decor' && (
-                <svg viewBox="0 0 420 300">
-                  <g class="bl">
-                    <g stroke="#6f8a58" stroke-width="2.4" fill="none" stroke-linecap="round">
-                      <path d="M130 168 C 126 140, 100 120, 92 92" />
-                      <path d="M130 168 C 128 130, 116 100, 118 68" />
-                      <path d="M130 168 C 134 130, 140 92, 146 60" />
-                      <path d="M130 168 C 140 140, 164 112, 172 88" />
-                      <path d="M130 168 C 120 150, 108 138, 108 124" />
-                      <path d="M130 168 C 142 152, 156 136, 158 114" />
-                    </g>
-                    <g fill="#8aa56d">
-                      <ellipse cx="110" cy="112" rx="9" ry="4" transform="rotate(-40 110 112)" />
-                      <ellipse cx="152" cy="100" rx="9" ry="4" transform="rotate(40 152 100)" />
-                      <ellipse cx="124" cy="134" rx="9" ry="4" transform="rotate(20 124 134)" />
-                    </g>
-                    {[
-                      [92, 92, '#f2b7b0'],
-                      [118, 68, '#fff4ee'],
-                      [146, 60, '#f6c9c2'],
-                      [172, 88, '#fff4ee'],
-                      [108, 124, '#f6c9c2'],
-                      [158, 114, '#f2b7b0'],
-                    ].map(([x, y, col]) => (
-                      <g transform={`translate(${x} ${y})`}>
-                        {[0, 72, 144, 216, 288].map((r) => (
-                          <circle cx="0" cy="-8" r="7.2" fill={col as string} transform={`rotate(${r})`} />
-                        ))}
-                        <circle r="3.6" fill="#e5b64f" />
-                      </g>
-                    ))}
-                  </g>
-                  <path d="M104 214 C 90 188, 106 162, 130 162 C 154 162, 170 188, 156 214Z" fill="#f6efe3" />
-                  <path d="M104 214 C 90 188, 106 162, 130 162 C 154 162, 170 188, 156 214Z" fill="#000" opacity="0.05" />
-                  <rect x="116" y="158" width="28" height="8" rx="3" fill="#efe6d6" />
-                  <g transform="rotate(6 292 214)">
-                    <rect x="248" y="112" width="86" height="102" rx="2" fill="#c8a86a" />
-                    <rect x="255" y="119" width="72" height="88" fill="#f6f0e4" />
-                    <circle cx="300" cy="144" r="9" fill="#ddb968" />
-                    <path d="M255 192 Q 275 166 297 180 T 327 172 V 207 H 255Z" fill="#b47962" />
-                    <path d="M255 200 Q 282 182 306 192 T 327 190 V 207 H 255Z" fill="#7f927e" />
-                  </g>
-                  <rect x="188" y="196" width="50" height="9" rx="1.5" fill="#7f927e" />
-                  <rect x="192" y="205" width="46" height="9" rx="1.5" fill="#b47962" />
-                  <rect x="40" y="214" width="340" height="14" rx="3" fill="#a98562" />
-                  <rect x="40" y="224" width="340" height="4" fill="#000" opacity="0.14" />
-                  <rect x="70" y="262" width="280" height="8" rx="2" fill="#a98562" />
-                  <path d="M62 228 L 52 290 M358 228 L 368 290 M92 228 L 100 290 M328 228 L 320 290" stroke="#2a2724" stroke-width="3" stroke-linecap="round" />
-                </svg>
-              )}
-
-              {c.key === 'gift' && (
-                <svg viewBox="0 0 420 300">
-                  <ellipse cx="210" cy="272" rx="170" ry="8" fill="#000" opacity="0.25" />
-                  <g>
-                    <rect x="52" y="196" width="60" height="68" rx="9" fill="#e8dcc4" opacity="0.95" />
-                    <rect x="56" y="222" width="52" height="38" rx="6" fill="#ddb968" />
-                    <path class="flame" d="M82 204 q -7 -12 0 -26 q 7 14 0 26Z" fill="#ffd36e" />
-                  </g>
-                  <rect x="322" y="214" width="56" height="50" rx="4" fill="#a8b5a0" />
-                  <rect x="344" y="214" width="12" height="50" fill="#f1e6d2" />
-                  <rect x="316" y="200" width="68" height="18" rx="4" fill="#bccab4" />
-                  <path d="M350 200 q -22 -22 -26 -4 q 8 10 26 4 q 22 6 26 -4 q -4 -18 -26 4Z" fill="#f1e6d2" />
-                  <rect x="134" y="148" width="152" height="116" rx="4" fill="#f1e6d2" />
-                  <rect x="198" y="148" width="24" height="116" fill="#b47962" />
-                  <g class="lid">
-                    <rect x="122" y="116" width="176" height="38" rx="5" fill="#e8dac0" />
-                    <rect x="198" y="116" width="24" height="38" fill="#b47962" />
-                    <g class="bow">
-                      <path d="M210 114 C 170 68, 140 96, 180 118 Z" fill="#c58468" />
-                      <path d="M210 114 C 250 68, 280 96, 240 118 Z" fill="#c58468" />
-                      <path d="M210 114 C 176 84, 160 100, 184 116 Z" fill="#a8654a" opacity="0.55" />
-                      <circle cx="210" cy="114" r="11" fill="#b47962" />
-                    </g>
-                  </g>
-                  <g class="tag">
-                    <path d="M286 164 q 22 6 26 34" stroke="#ddb968" stroke-width="2" fill="none" />
-                    <rect x="298" y="196" width="34" height="22" rx="3" fill="#ddb968" transform="rotate(8 315 207)" />
-                    <circle cx="304" cy="203" r="2.4" fill="#2b4339" />
-                  </g>
-                  <g fill="#ddb968">
-                    <path class="tw tw1" d="M60 80 l3 -9 l3 9 l9 3 l-9 3 l-3 9 l-3 -9 l-9 -3Z" />
-                    <path class="tw tw2" d="M360 100 l2.4 -7 l2.4 7 l7 2.4 l-7 2.4 l-2.4 7 l-2.4 -7 l-7 -2.4Z" />
-                    <path class="tw tw3" d="M330 40 l2 -6 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2Z" />
-                  </g>
-                </svg>
-              )}
+          <article class="card" data-card>
+            <div class="art">
+              <Photo name={c.photo} pos={c.pos} widths={[480, 720, 960]} sizes="(min-width: 1020px) 30vw, (min-width: 640px) 46vw, 100vw" />
             </div>
 
             <div class="label">
               <p class="no">No. {c.no}</p>
               <h3 class="name">{c.title}</h3>
               <p class="copy">{c.copy}</p>
-              <a class="more" href="#visit">
-                Talk it through in store<span class="sr-only"> about {c.title.toLowerCase()}</span>
+              <a class="more" href={url(c.href)}>
+                {c.more}
                 <span class="arr" aria-hidden="true">→</span>
               </a>
             </div>
@@ -300,6 +92,11 @@ const planks = [
         ))
       }
     </div>
+
+    <p class="shop-hint" data-reveal>
+      Want to build a list before you come in?
+      <a href={url('/shop/')}>Shop the store <span aria-hidden="true">→</span></a>
+    </p>
   </div>
 </section>
 
@@ -378,13 +175,17 @@ const planks = [
   }
 
   .art {
-    background: var(--tint);
-    aspect-ratio: 7 / 5;
+    position: relative;
+    aspect-ratio: 5 / 4;
     overflow: hidden;
+    background: var(--cream);
   }
-  .art svg {
-    width: 100%;
-    height: 100%;
+  .art :global(img) {
+    transition: transform 1.3s var(--ease);
+  }
+  .card:hover .art :global(img),
+  .card:focus-within .art :global(img) {
+    transform: scale(1.06);
   }
 
   .label {
@@ -451,177 +252,19 @@ const planks = [
     outline: none;
   }
 
-  .card--dark {
-    background: #24372f;
-    color: var(--porcelain);
+  .shop-hint {
+    margin-top: clamp(40px, 6vw, 72px);
+    text-align: center;
+    color: var(--ink-soft);
   }
-  .card--dark .no,
-  .card--dark .copy {
-    color: #c9d3cd;
-  }
-  .card--dark .more {
-    color: var(--wheat);
-  }
-  .card--dark .label::before {
-    background: #1b2724;
-    box-shadow: 0 2px 3px rgb(0 0 0 / 0.6) inset;
-  }
-
-  /* ---- illustration motion ---- */
-  .pc {
-    transform-origin: 170px 258px;
-    transform: rotate(var(--a));
-    transition: transform 0.9s var(--ease);
-  }
-  .card:hover .pc,
-  .card:focus-within .pc {
-    transform: rotate(var(--h));
-  }
-
-  .sheet,
-  .flap {
-    transition: transform 0.8s var(--ease);
-  }
-  .flap {
-    transform-origin: 394px 212px;
-  }
-  .card:hover .flap,
-  .card:focus-within .flap {
-    transform: scale(1.35);
-  }
-  .card:hover .sheet,
-  .card:focus-within .sheet {
-    transform: translateX(8px);
-  }
-
-  .pl {
-    transition: transform 0.7s var(--ease);
-    transition-delay: calc(var(--i) * 30ms);
-  }
-  .card:hover .pl,
-  .card:focus-within .pl {
-    transform: translateX(var(--dx));
-  }
-
-  .cl {
-    transition: transform 1s var(--ease);
-  }
-  .cl--l {
-    transform-box: fill-box;
-    transform-origin: left center;
-    transform: translateX(0) scaleX(1);
-  }
-  .cl--r {
-    transform-box: fill-box;
-    transform-origin: right center;
-    transform: translateX(0) scaleX(1);
-  }
-  .card:hover .cl--l,
-  .card:focus-within .cl--l {
-    transform: translateX(-16px) scaleX(0.55);
-  }
-  .card:hover .cl--r,
-  .card:focus-within .cl--r {
-    transform: translateX(16px) scaleX(0.55);
-  }
-
-  .bl {
-    transform-origin: 130px 168px;
-    animation: bsway 6s ease-in-out infinite alternate;
-  }
-  @keyframes bsway {
-    from {
-      transform: rotate(-1.4deg);
-    }
-    to {
-      transform: rotate(1.8deg);
-    }
-  }
-
-  .lid {
-    transition: transform 0.8s var(--ease);
-    transform-origin: 122px 154px;
-  }
-  .card:hover .lid,
-  .card:focus-within .lid {
-    transform: translateY(-16px) rotate(-5deg);
-  }
-  .bow {
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-  .card:hover .bow {
-    animation: wig 0.9s ease-in-out 1;
-  }
-  @keyframes wig {
-    30% {
-      transform: rotate(6deg) scale(1.06);
-    }
-    60% {
-      transform: rotate(-4deg);
-    }
-  }
-  .tag {
-    transform-origin: 286px 164px;
-    animation: tagswing 5s ease-in-out infinite alternate;
-  }
-  @keyframes tagswing {
-    from {
-      transform: rotate(-3deg);
-    }
-    to {
-      transform: rotate(4deg);
-    }
-  }
-  .flame {
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: flick 1.6s ease-in-out infinite alternate;
-  }
-  @keyframes flick {
-    from {
-      transform: scale(1, 1);
-    }
-    to {
-      transform: scale(0.88, 1.12);
-    }
-  }
-  .tw {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: twinkle 3.2s ease-in-out infinite;
-  }
-  .tw2 {
-    animation-delay: 0.8s;
-  }
-  .tw3 {
-    animation-delay: 1.6s;
-  }
-  @keyframes twinkle {
-    0%,
-    100% {
-      opacity: 0.35;
-      transform: scale(0.8);
-    }
-    50% {
-      opacity: 1;
-      transform: scale(1.1);
-    }
+  .shop-hint a {
+    margin-left: 6px;
+    font-weight: 600;
+    color: var(--clay-deep);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .bl,
-    .tag,
-    .flame,
-    .tw {
-      animation: none;
-    }
-    .pc,
-    .sheet,
-    .flap,
-    .pl,
-    .cl,
-    .lid,
+    .art :global(img),
     .card {
       transition: none;
     }

@@ -1,0 +1,53 @@
+---
+/** A section opener in the site's voice: mono eyebrow, display heading (may contain <em>), optional lede. */
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  id: string;
+  tone?: 'light' | 'dark';
+  /** Put the lede beside the heading on wide screens. */
+  split?: boolean;
+}
+const { eyebrow, title, lede, id, tone = 'light', split = false } = Astro.props;
+---
+
+<header class:list={['head', `head--${tone}`, { 'head--split': split }]}>
+  <p class="eyebrow" data-reveal>{eyebrow}</p>
+  <h2 {id} class="display" data-split set:html={title} />
+  {lede && <p class="lede" data-reveal>{lede}</p>}
+</header>
+
+<style>
+  .head {
+    display: grid;
+    gap: 20px;
+    margin-bottom: clamp(36px, 5vw, 72px);
+  }
+  .head h2 {
+    font-size: clamp(2.3rem, 1rem + 4.6vw, 4.6rem);
+    max-width: 12em;
+  }
+  .head h2 :global(em) {
+    color: var(--clay-deep);
+  }
+  .head--dark .eyebrow {
+    color: #c9d3cd;
+  }
+  .head--dark .lede {
+    color: #d6ddd8;
+  }
+  .head--dark h2 :global(em) {
+    color: var(--wheat);
+  }
+  @media (min-width: 900px) {
+    .head--split {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+      align-items: end;
+      column-gap: 48px;
+    }
+    .head--split .eyebrow {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+import { photos, type Photo, type PhotoKey } from '../data/photos';
+
+/** A small "where this picture came from" link, centered under the photo. Renders nothing without a credit. */
+interface Props {
+  name: PhotoKey;
+}
+const credit = (photos[Astro.props.name] as Photo).credit;
+---
+
+{
+  credit && (
+    <a class="photo-credit" href={credit.href} target="_blank" rel="noopener noreferrer">
+      Photo via {credit.label}
+      <span aria-hidden="true">↗</span>
+      <span class="sr-only">(opens in a new tab)</span>
+    </a>
+  )
+}
+
+<style>
+  .photo-credit {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    margin: 12px auto 0;
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent);
+    text-underline-offset: 3px;
+  }
+  .photo-credit:hover {
+    color: var(--clay-deep);
+    text-decoration-color: currentColor;
+  }
+</style>

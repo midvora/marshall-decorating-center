@@ -1,0 +1,493 @@
+---
+import Photo from './Photo.astro';
+import { currentPromo } from '../data/promos';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+const promo = currentPromo;
+const words = promo.headline.split(' ');
+const lead = words.slice(0, -2).join(' ');
+const tail = words.slice(-2).join(' ');
+const href = url(`/promotions/${promo.slug}/`);
+
+/* ---- fall decoration. Everything below is drawn here, so there is nothing to download. ---- */
+
+/** Leaf outlines on a 100 x 100 grid. */
+const leafShapes = {
+  maple:
+    'M50 4 L58 22 L72 14 L68 36 L92 30 L80 48 L96 56 L72 66 L76 76 L56 72 L56 96 L44 96 L44 72 L24 76 L28 66 L4 56 L20 48 L8 30 L32 36 L28 14 L42 22 Z',
+  oak: 'M50 5 C58 5 60 15 66 17 C74 13 82 19 78 27 C88 29 90 39 82 43 C90 51 86 61 76 61 C78 71 68 77 60 73 C60 83 56 91 50 95 C44 91 40 83 40 73 C32 77 22 71 24 61 C14 61 10 51 18 43 C10 39 12 29 22 27 C18 19 26 13 34 17 C40 15 42 5 50 5 Z',
+  leaf: 'M50 4 C 12 30, 12 72, 50 96 C 88 72, 88 30, 50 4 Z',
+} as const;
+const veins = { maple: 'M50 94 V28', oak: 'M50 92 V18', leaf: 'M50 94 V16' } as const;
+
+type Drift = { k: keyof typeof leafShapes | 'acorn'; x: string; y: string; s: number; d: number; t: number; c: string; r: number };
+const drifting: Drift[] = [
+  { k: 'maple', x: '4%', y: '14%', s: 40, d: 0, t: 21, c: '#b25a3c', r: -20 },
+  { k: 'oak', x: '12%', y: '60%', s: 30, d: 8, t: 27, c: '#a9812d', r: 30 },
+  { k: 'acorn', x: '22%', y: '30%', s: 22, d: 4, t: 23, c: '#8a5a34', r: -10 },
+  { k: 'leaf', x: '31%', y: '72%', s: 24, d: 12, t: 25, c: '#ddb968', r: 40 },
+  { k: 'maple', x: '41%', y: '20%', s: 32, d: 6, t: 22, c: '#c58468', r: 14 },
+  { k: 'maple', x: '50%', y: '55%', s: 46, d: 15, t: 28, c: '#8a4e39', r: -34 },
+  { k: 'oak', x: '59%', y: '80%', s: 28, d: 2, t: 24, c: '#b25a3c', r: 20 },
+  { k: 'acorn', x: '67%', y: '12%', s: 24, d: 10, t: 26, c: '#a9812d', r: 12 },
+  { k: 'leaf', x: '74%', y: '44%', s: 30, d: 17, t: 21, c: '#c58468', r: -44 },
+  { k: 'maple', x: '82%', y: '68%', s: 38, d: 9, t: 23, c: '#b25a3c', r: 26 },
+  { k: 'oak', x: '89%', y: '26%', s: 30, d: 14, t: 29, c: '#ddb968', r: -18 },
+  { k: 'maple', x: '96%', y: '50%', s: 34, d: 5, t: 25, c: '#a9812d', r: 36 },
+];
+
+/* A string of pennants hanging from the top edge: three swags, flags placed along each curve. */
+const flagColors = ['#b25a3c', '#ddb968', '#8a4e39', '#7f927e', '#c58468', '#a9812d'];
+const swagW = 480;
+const swags = [0, 1, 2].map((i) => i * swagW);
+const ropes = swags.map((x0) => `M${x0} 4 Q ${x0 + swagW / 2} 88 ${x0 + swagW} 4`);
+const flags = swags.flatMap((x0, si) =>
+  Array.from({ length: 7 }, (_, j) => {
+    const t = (j + 0.5) / 7;
+    const cx = x0 + swagW / 2;
+    const x = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t ** 2 * (x0 + swagW);
+    const y = (1 - t) ** 2 * 4 + 2 * (1 - t) * t * 88 + t ** 2 * 4;
+    const dx = 2 * (1 - t) * (cx - x0) + 2 * t * (x0 + swagW - cx);
+    const dy = 2 * (1 - t) * (88 - 4) + 2 * t * (4 - 88);
+    return {
+      x: +x.toFixed(1),
+      y: +y.toFixed(1),
+      a: +((Math.atan2(dy, dx) * 180) / Math.PI).toFixed(1),
+      c: flagColors[(si * 7 + j) % flagColors.length],
+    };
+  }),
+);
+
+/* A little patch of pumpkins in the corner: orange, glazed sage and mustard, like the ones on the floor. */
+const pumpkins = [
+  { s: 92, l: 0, mid: '#8fa68f', dark: '#6f886f', light: '#a9bda8', r: -6 },
+  { s: 138, l: 58, mid: '#d9763a', dark: '#b85a26', light: '#ea9a55', r: 0 },
+  { s: 84, l: 186, mid: '#d6a23a', dark: '#b8821f', light: '#e8c066', r: 5 },
+];
+
+const tilts = ['-1.6deg', '1.2deg', '-0.8deg'];
+/** Small leaf "stickers" pinned over the corner of some of the cards, by card index. */
+const pins: Record<number, { k: keyof typeof leafShapes; c: string; style: string }> = {
+  0: { k: 'maple', c: '#b25a3c', style: 'right:-16px;top:-18px;--pr:24deg' },
+  2: { k: 'oak', c: '#a9812d', style: 'right:-14px;bottom:-14px;--pr:-28deg' },
+};
+---
+
+<section class="promo" id="promo" aria-labelledby="promo-h">
+  <div class="leaves" aria-hidden="true">
+    {
+      drifting.map((l) => (
+        <svg
+          class="leaf"
+          viewBox="0 0 100 100"
+          style={`--x:${l.x};--y:${l.y};--s:${l.s}px;--d:${l.d}s;--t:${l.t}s;--r:${l.r}deg`}
+        >
+          {l.k === 'acorn' ? (
+            <>
+              <path d="M50 97 C34 82 28 62 28 46 L72 46 C72 62 66 82 50 97 Z" fill={l.c} />
+              <path d="M22 50 C20 22 80 22 78 50 Z" fill="#6b4a2a" />
+              <path d="M50 26 V12" stroke="#6b4a2a" stroke-width="6" stroke-linecap="round" />
+            </>
+          ) : (
+            <>
+              <path d={leafShapes[l.k]} fill={l.c} />
+              <path d={veins[l.k]} stroke="#000" stroke-opacity="0.2" stroke-width="3" stroke-linecap="round" />
+            </>
+          )}
+        </svg>
+      ))
+    }
+  </div>
+
+  <svg class="bunting" viewBox="0 0 1440 100" aria-hidden="true">
+    {ropes.map((d) => <path d={d} fill="none" stroke="#6b4a2a" stroke-opacity="0.55" stroke-width="2" />)}
+    {
+      flags.map((f) => (
+        <g transform={`translate(${f.x} ${f.y}) rotate(${f.a})`}>
+          <path d="M-17 -1 H17 L0 44 Z" fill={f.c} />
+          <path d="M-17 -1 H17" stroke="#000" stroke-opacity="0.15" stroke-width="2" />
+        </g>
+      ))
+    }
+  </svg>
+
+  <div class="patch" aria-hidden="true">
+    {
+      pumpkins.map((p) => (
+        <svg class="pumpkin" viewBox="0 0 120 104" style={`--s:${p.s}px;--l:${p.l}px;--pr:${p.r}deg`}>
+          <ellipse cx="30" cy="62" rx="26" ry="34" fill={p.dark} />
+          <ellipse cx="90" cy="62" rx="26" ry="34" fill={p.dark} />
+          <ellipse cx="44" cy="62" rx="25" ry="37" fill={p.mid} />
+          <ellipse cx="76" cy="62" rx="25" ry="37" fill={p.mid} />
+          <ellipse cx="60" cy="62" rx="21" ry="38" fill={p.light} />
+          <path d="M60 28 C60 20 58 14 52 10" stroke="#5f4b25" stroke-width="8" stroke-linecap="round" fill="none" />
+          <path d="M64 32 C80 22 92 28 96 40" stroke="#6f8a5c" stroke-width="3" stroke-linecap="round" fill="none" />
+        </svg>
+      ))
+    }
+  </div>
+
+  <div class="plaid" aria-hidden="true"></div>
+
+  <div class="container grid">
+    <header class="intro">
+      <p class="pill" data-reveal>
+        <span class="pd" aria-hidden="true"></span>
+        This week's promotion <span class="sep" aria-hidden="true">·</span> {promo.dates}
+      </p>
+      <h2 id="promo-h" class="display" data-split>{lead} <em>{tail}</em></h2>
+      <p class="lede" data-reveal>{promo.summary}</p>
+
+      <div class="actions" data-reveal>
+        <a class="btn" href={href}>See the {promo.name.toLowerCase()} collection <span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn btn--ghost" href={site.directionsHref} target="_blank" rel="noopener noreferrer">
+          Get directions <span class="sr-only">(opens in a new tab)</span>
+        </a>
+      </div>
+    </header>
+
+    <ul class="cards">
+      {
+        promo.items.map((it, i) => (
+          <li class="pcard" data-promo-card style={`--tilt:${tilts[i % tilts.length]}`}>
+            <span class="tape" aria-hidden="true"></span>
+            {pins[i] && (
+              <svg class="pin" viewBox="0 0 100 100" aria-hidden="true" style={pins[i].style}>
+                <path d={leafShapes[pins[i].k]} fill={pins[i].c} />
+                <path d={veins[pins[i].k]} stroke="#000" stroke-opacity="0.2" stroke-width="3" stroke-linecap="round" />
+              </svg>
+            )}
+            <div class="photo">
+              <Photo name={it.photo} loading="eager" widths={[320, 443]} sizes="(min-width: 1020px) 22vw, (min-width: 640px) 30vw, 72vw" />
+            </div>
+            <div class="info">
+              <p class="tag">{it.tag}</p>
+              <h3 class="ttl"><a class="stretch" href={href}>{it.title}</a></h3>
+              <p class="txt">{it.copy}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .promo {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(96px, 11vw, 150px) clamp(72px, 9vw, 130px);
+    background:
+      radial-gradient(60% 50% at 8% 0%, rgb(178 90 60 / 0.16), transparent 70%),
+      radial-gradient(50% 60% at 100% 100%, rgb(221 185 104 / 0.3), transparent 70%),
+      linear-gradient(180deg, #f6e6cc 0%, #efd7b2 100%);
+  }
+
+  /* ---- falling leaves and acorns ---- */
+  .leaves {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    container-type: size;
+  }
+  .leaf {
+    position: absolute;
+    left: var(--x);
+    top: -80px;
+    width: var(--s);
+    height: auto;
+    opacity: 0;
+    transform: rotate(var(--r));
+    /* a negative delay starts each one part-way down, so the section is never empty on load */
+    animation: drift var(--t) linear calc(var(--d) * -1) infinite;
+  }
+  @keyframes drift {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 0, 0) rotate(var(--r));
+    }
+    8% {
+      opacity: 0.5;
+    }
+    30% {
+      transform: translate3d(34px, 30cqh, 0) rotate(calc(var(--r) + 90deg));
+    }
+    60% {
+      transform: translate3d(-16px, 62cqh, 0) rotate(calc(var(--r) + 190deg));
+    }
+    92% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0;
+      transform: translate3d(26px, calc(100cqh + 90px), 0) rotate(calc(var(--r) + 320deg));
+    }
+  }
+
+  /* ---- bunting along the top edge ---- */
+  .bunting {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: -1;
+    width: max(100%, 900px);
+    height: auto;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  /* ---- pumpkin patch, bottom left ---- */
+  .patch {
+    position: absolute;
+    left: max(var(--gutter), calc((100% - var(--maxw)) / 2));
+    bottom: 10px;
+    z-index: -1;
+    width: 290px;
+    height: 150px;
+    pointer-events: none;
+    transform-origin: 0 100%;
+  }
+  .pumpkin {
+    position: absolute;
+    left: var(--l);
+    bottom: 0;
+    width: var(--s);
+    height: auto;
+    transform: rotate(var(--pr));
+    filter: drop-shadow(0 10px 8px rgb(80 40 20 / 0.25));
+  }
+  @media (max-width: 1019px) {
+    .patch {
+      left: auto;
+      right: var(--gutter);
+      transform: scale(0.62);
+      transform-origin: 100% 100%;
+    }
+  }
+
+  /* ---- buffalo-check ribbon along the bottom edge (the showroom has a buffalo-check wall) ---- */
+  .plaid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    height: 22px;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(0deg, rgb(138 78 57 / 0.5) 0 11px, transparent 11px 22px),
+      repeating-linear-gradient(90deg, rgb(138 78 57 / 0.5) 0 11px, transparent 11px 22px), #f6e6cc;
+    border-top: 1px solid rgb(138 78 57 / 0.25);
+  }
+
+  .grid {
+    display: grid;
+    gap: clamp(40px, 6vw, 72px);
+    align-items: center;
+  }
+  @media (min-width: 1020px) {
+    .grid {
+      grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+      gap: clamp(32px, 4vw, 64px);
+    }
+  }
+
+  .intro {
+    display: grid;
+    gap: 22px;
+    justify-items: start;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 12px;
+    border-radius: 22px;
+    line-height: 1.4;
+    background: var(--ink);
+    color: var(--porcelain);
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .pd {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--wheat);
+    box-shadow: 0 0 0 0 rgb(221 185 104 / 0.7);
+    animation: beat 2.4s ease-out infinite;
+  }
+  @keyframes beat {
+    70% {
+      box-shadow: 0 0 0 9px rgb(221 185 104 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(221 185 104 / 0);
+    }
+  }
+  .sep {
+    color: var(--wheat);
+  }
+  .intro h2 {
+    font-size: clamp(2.6rem, 1rem + 5vw, 5.2rem);
+  }
+  .intro h2 em {
+    color: #9c4a2c;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  /* ---- the three pinned cards ---- */
+  .cards {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(72vw, 300px);
+    gap: 18px;
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 18px var(--gutter) 28px;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .cards::-webkit-scrollbar {
+    display: none;
+  }
+  @media (min-width: 640px) {
+    .cards {
+      grid-auto-flow: row;
+      grid-auto-columns: auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(14px, 2vw, 26px);
+      margin: 0;
+      padding: 18px 0 40px;
+      overflow: visible;
+    }
+    .pcard:nth-child(2) {
+      margin-top: 40px;
+    }
+  }
+
+  .pcard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 9px 9px 0;
+    border-radius: 6px;
+    background: var(--paper);
+    box-shadow:
+      0 36px 50px -30px rgb(80 40 20 / 0.55),
+      0 0 0 1px rgb(80 40 20 / 0.08);
+    transform: rotate(var(--tilt));
+    transition: transform 0.6s var(--ease), box-shadow 0.6s var(--ease);
+    scroll-snap-align: center;
+  }
+  .pcard:hover,
+  .pcard:focus-within {
+    transform: rotate(0deg) translateY(-8px);
+    box-shadow:
+      0 50px 60px -30px rgb(80 40 20 / 0.6),
+      0 0 0 1px rgb(80 40 20 / 0.1);
+  }
+  .pcard:focus-within {
+    outline: 3px solid var(--clay-deep);
+    outline-offset: 4px;
+  }
+  .tape {
+    position: absolute;
+    left: 50%;
+    top: -12px;
+    z-index: 2;
+    width: 74px;
+    height: 24px;
+    background: rgb(221 185 104 / 0.78);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.12);
+    transform: translateX(-50%) rotate(-3deg);
+  }
+  .pin {
+    position: absolute;
+    z-index: 3;
+    width: 46px;
+    height: auto;
+    pointer-events: none;
+    transform: rotate(var(--pr));
+    filter: drop-shadow(0 4px 4px rgb(80 40 20 / 0.3));
+  }
+  .photo {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--cream);
+  }
+  .photo :global(img) {
+    transition: transform 1.2s var(--ease);
+  }
+  .pcard:hover .photo :global(img) {
+    transform: scale(1.06);
+  }
+  .info {
+    display: grid;
+    gap: 6px;
+    padding: 16px 10px 20px;
+  }
+  .tag {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #9c4a2c;
+  }
+  .ttl {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 480;
+    font-size: clamp(1.25rem, 1rem + 0.7vw, 1.55rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .stretch {
+    text-decoration: none;
+  }
+  .stretch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .stretch:focus-visible {
+    outline: none;
+  }
+  .txt {
+    color: var(--ink-soft);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaf,
+    .pd {
+      animation: none;
+    }
+    .leaf {
+      top: var(--y);
+      opacity: 0.45;
+    }
+    .pcard,
+    .photo :global(img) {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,238 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import PageHero from '../components/PageHero.astro';
+import Split from '../components/Split.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import Steps from '../components/Steps.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Photo from '../components/Photo.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { url } from '../lib/url';
+
+const rooms = [
+  { room: 'Kitchen & bath', pick: 'Vinyl plank or tile', why: 'Made for spills, steam and busy mornings.' },
+  { room: 'Entry & mudroom', pick: 'Vinyl plank', why: 'Stands up to boots, pets and everyday traffic.' },
+  { room: 'Living room & bedrooms', pick: 'Hardwood or wood-look vinyl', why: 'The warmth of wood, in the finish that fits your life.' },
+  { room: 'Basement', pick: 'Vinyl plank', why: 'A comfortable, good-looking floor for below grade.' },
+];
+---
+
+<Base
+  title="Flooring | Marshall Decorating Center (unofficial concept by Midvora)"
+  description="Vinyl plank and tile, hardwood and carpet remnants at Marshall Decorating Center in Marshall, Minnesota. See the floors in person, stacked and ready to look at."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <PageHero
+      crumb="Flooring"
+      eyebrow="Flooring"
+      title="Floors you can <em>see in person.</em>"
+      lede="Flooring is a big part of what we do, and vinyl plank and tile lead the way. Walk the aisles, pick up a plank and see how it looks in your light."
+      photo="floorHardwood"
+      pos="50% 66%"
+    >
+      <a class="btn" href={url('/shop/?dept=flooring')}>Shop flooring <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn--ghost" href={url('/visit/')}>Plan a visit</a>
+    </PageHero>
+
+    <section class="band stat" aria-label="Flooring at a glance">
+      <div class="container bar">
+        <div class="pair" data-reveal>
+          <figure>
+            <Photo name="floorAcacia" widths={[480, 720, 960]} sizes="(min-width: 900px) 46vw, 100vw" />
+            <figcaption>Warm acacia</figcaption>
+          </figure>
+          <figure>
+            <Photo name="floorOak" widths={[480, 720, 960]} sizes="(min-width: 900px) 46vw, 100vw" />
+            <figcaption>Weathered oak</figcaption>
+          </figure>
+        </div>
+        <dl class="facts">
+          <div data-rise><dt>50,000</dt><dd>sq ft of vinyl plank and tile on hand</dd></div>
+          <div data-rise><dt>Wood looks</dt><dd>acacia, oak and more, in every tone</dd></div>
+          <div data-rise><dt>By the stack</dt><dd>pick it up and compare it in daylight</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <FeatureGrid
+      id="kinds"
+      eyebrow="What we carry"
+      title="Three ways to <em>cover a floor.</em>"
+      tone="cream"
+      items={[
+        { k: 'Most popular', title: 'Vinyl plank & tile', copy: 'Wood and stone looks that handle busy homes, in a huge range of colors and widths.' },
+        { k: 'Classic', title: 'Hardwood', copy: 'Wide-plank wood for the rooms where warmth and character matter most.' },
+        { k: 'Small projects', title: 'Carpet remnants & rolls', copy: 'A few rolls and remnants for closets, stairs, offices and smaller rooms.' },
+      ]}
+    />
+
+    <section class="band" aria-labelledby="guide-h">
+      <div class="container">
+        <SectionHead id="guide-h" eyebrow="A quick guide" title="Which floor <em>for which room?</em>" lede="A starting point, nothing more. Tell us how you live and we will narrow it down together." split />
+        <ul class="rooms">
+          {
+            rooms.map((r) => (
+              <li data-rise>
+                <p class="room">{r.room}</p>
+                <p class="pick">{r.pick}</p>
+                <p class="why">{r.why}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <Split
+      id="seen"
+      eyebrow="In the showroom"
+      title="Seen underfoot, <em>styled like home.</em>"
+      photo="floorHardwood"
+      pos="50% 70%"
+      reverse
+      tone="cream"
+    >
+      <p>
+        It is hard to judge a floor from a tiny sample. In the showroom you can see wide-plank wood laid out under real
+        furniture, with the color wall just beyond, then carry a plank over to the window and look at it in daylight.
+      </p>
+      <Fragment slot="actions">
+        <a class="btn" href={url('/visit/')}>Plan a visit <span class="arr" aria-hidden="true">→</span></a>
+      </Fragment>
+    </Split>
+
+    <Steps
+      id="next"
+      eyebrow="Getting started"
+      title="From first look <em>to finished floor.</em>"
+      tone="light"
+      steps={[
+        { title: 'Measure the room', copy: 'Rough length and width is enough to start. Bring a photo too.' },
+        { title: 'Look and touch', copy: 'Walk the aisles and pick up the planks and tiles you like.' },
+        { title: 'Compare in your light', copy: 'Take a plank to the window and check it against your walls.' },
+        { title: 'Plan the project', copy: 'Ask what comes next, including options for getting it installed.' },
+      ]}
+    />
+
+    <CtaBand title="Come walk <em>the floors.</em>" text="Bring your measurements and a photo of the room, and we will help you find a place to start." />
+  </main>
+  <Footer />
+  <MobileBar />
+</Base>
+
+<style>
+  .stat {
+    padding-block: 0 clamp(48px, 6vw, 88px);
+  }
+  .bar {
+    display: grid;
+    gap: clamp(28px, 4vw, 48px);
+  }
+  .pair {
+    display: grid;
+    gap: clamp(12px, 2vw, 24px);
+  }
+  @media (min-width: 640px) {
+    .pair {
+      grid-template-columns: 1.08fr 0.92fr;
+    }
+  }
+  .pair figure {
+    position: relative;
+    margin: 0;
+    height: clamp(260px, 36vw, 500px);
+    overflow: hidden;
+    border-radius: var(--radius);
+    box-shadow: 0 50px 80px -48px rgb(34 44 42 / 0.6);
+  }
+  .pair figcaption {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 2;
+    padding: 6px 15px 7px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 36;
+    font-weight: 520;
+    font-size: 1rem;
+  }
+  .facts {
+    display: grid;
+    gap: 22px;
+    margin: 0;
+  }
+  @media (min-width: 720px) {
+    .facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(20px, 4vw, 56px);
+    }
+  }
+  .facts div {
+    padding-top: 18px;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  }
+  .facts dt {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 420;
+    font-size: clamp(2.2rem, 1.4rem + 2.4vw, 3.4rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--clay-deep);
+  }
+  .facts dd {
+    margin: 8px 0 0;
+    color: var(--ink-soft);
+  }
+
+  .rooms {
+    display: grid;
+    gap: clamp(14px, 2vw, 22px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .rooms {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1020px) {
+    .rooms {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .rooms li {
+    display: grid;
+    gap: 6px;
+    padding: 24px 22px;
+    border-radius: 14px;
+    background: var(--cream);
+  }
+  .room {
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .pick {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 480;
+    font-size: 1.45rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .why {
+    color: var(--ink-soft);
+    font-size: 0.9375rem;
+  }
+</style>

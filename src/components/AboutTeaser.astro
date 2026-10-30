@@ -1,0 +1,131 @@
+---
+import Photo from './Photo.astro';
+import PhotoCredit from './PhotoCredit.astro';
+import Stamp from './Stamp.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+const facts = [
+  { k: String(site.founded), v: 'opened on Main Street' },
+  { k: '2nd', v: 'generation, family owned' },
+  { k: '50,000', v: 'sq ft of vinyl plank and tile' },
+];
+---
+
+<section class="about" id="about" aria-labelledby="about-h">
+  <div class="container grid">
+    <div class="portrait" data-reveal>
+      <div class="arch">
+        <Photo name="owners" pos="50% 28%" widths={[480, 720, 960]} sizes="(min-width: 1020px) 34vw, 80vw" />
+      </div>
+      <Stamp class="stamp" />
+      <PhotoCredit name="owners" />
+    </div>
+
+    <div class="copy">
+      <p class="eyebrow" data-reveal>Our story</p>
+      <h2 id="about-h" class="display" data-split>A Main Street store, <em>built one conversation at a time.</em></h2>
+      <p class="lede" data-reveal>
+        Marshall Decorating Center opened on Main Street in {site.founded}. Today the second generation runs it, with a
+        team that has been on the floor for decades and customers who have been coming in just as long.
+      </p>
+
+      <dl class="facts" data-reveal>
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.k}</dt>
+              <dd>{f.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <a class="btn" href={url('/about/')} data-reveal>Read our story <span class="arr" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    position: relative;
+    padding-block: clamp(72px, 10vw, 150px);
+  }
+  .grid {
+    display: grid;
+    gap: clamp(44px, 7vw, 80px);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+      gap: clamp(48px, 7vw, 110px);
+    }
+  }
+
+  .portrait {
+    position: relative;
+    max-width: 480px;
+    margin-inline: auto;
+    width: 100%;
+  }
+  .arch {
+    aspect-ratio: 4 / 5;
+    border-radius: 999px 999px 22px 22px;
+    overflow: hidden;
+    background: var(--cream);
+    box-shadow:
+      0 50px 80px -44px rgb(34 44 42 / 0.65),
+      0 0 0 1px rgb(34 44 42 / 0.08);
+  }
+  .portrait :global(.stamp) {
+    position: absolute;
+    right: -14px;
+    bottom: 8%;
+  }
+
+  .copy {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+  .copy h2 {
+    font-size: clamp(2.5rem, 1rem + 5vw, 5rem);
+    max-width: 11em;
+  }
+  .copy h2 em {
+    color: var(--clay-deep);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(14px, 3vw, 36px);
+    width: 100%;
+    max-width: 640px;
+    margin: 6px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  }
+  .facts dt {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 420;
+    font-size: clamp(1.9rem, 1.2rem + 2.4vw, 3.1rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--clay-deep);
+  }
+  .facts dd {
+    margin: 8px 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.35;
+    color: var(--ink-soft);
+  }
+  @media (max-width: 480px) {
+    .facts {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+  }
+</style>

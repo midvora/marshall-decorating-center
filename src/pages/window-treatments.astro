@@ -1,0 +1,131 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import PageHero from '../components/PageHero.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import Steps from '../components/Steps.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Photo from '../components/Photo.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { url } from '../lib/url';
+
+const looks = [
+  { photo: 'windowSheers', title: 'Soft and sheer', copy: 'Let the daylight in and keep the view.', pos: '50% 40%' },
+  { photo: 'windowNavyDrapes', title: 'Full-length drapery', copy: 'Privacy, sleep and a finished look.', pos: '30% 40%' },
+  { photo: 'windowSheersDrapes', title: 'Layered', copy: 'Sheers for the day, drapes for the night.', pos: '45% 50%' },
+] as const;
+---
+
+<Base
+  title="Window treatments | Marshall Decorating Center (unofficial concept by Midvora)"
+  description="Window treatments at Marshall Decorating Center in Marshall, Minnesota: bring light, privacy and texture into balance. Bring your window measurements and a photo of the room."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <PageHero
+      crumb="Window treatments"
+      eyebrow="Window treatments"
+      title="Light, privacy <em>and a little texture.</em>"
+      lede="The right window treatment changes how a room feels at noon and at night. Stop in with your window measurements and a photo of the room, and we will talk it through."
+      photo="windowSheersDrapes"
+      pos="45% 50%"
+    >
+      <a class="btn" href={url('/shop/?dept=windows')}>Shop window treatments <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn--ghost" href={url('/visit/')}>Plan a visit</a>
+    </PageHero>
+
+    <FeatureGrid
+      id="goals"
+      eyebrow="What do you need?"
+      title="Start with <em>what the room needs.</em>"
+      cols={4}
+      tone="cream"
+      items={[
+        { k: 'Light', title: 'Filter the glare', copy: 'Soften afternoon sun without losing the daylight.' },
+        { k: 'Privacy', title: 'Close it in', copy: 'Keep the street out of the living room and the bedroom.' },
+        { k: 'Sleep', title: 'Darken the room', copy: 'Heavier fabrics for the rooms that need to be dark.' },
+        { k: 'Style', title: 'Finish the look', copy: 'Texture, pattern and color that tie into your walls and floor.' },
+      ]}
+    />
+
+    <section class="band" aria-labelledby="looks-h">
+      <div class="container">
+        <SectionHead id="looks-h" eyebrow="Looks to consider" title="Three ways to <em>dress a window.</em>" lede="A few ideas to react to. Tell us which feels like your room." split />
+        <ul class="looks">
+          {
+            looks.map((l) => (
+              <li data-rise>
+                <div class="shot">
+                  <Photo name={l.photo} pos={l.pos} widths={[360, 540, 720]} sizes="(min-width: 900px) 30vw, 90vw" />
+                </div>
+                <h3>{l.title}</h3>
+                <p>{l.copy}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <Steps
+      id="before"
+      eyebrow="Before you come in"
+      title="Four things to <em>bring with you.</em>"
+      tone="cream"
+      steps={[
+        { title: 'Window sizes', copy: 'Width and height of each window, in inches. A phone photo of each helps too.' },
+        { title: 'A daytime photo', copy: 'Show us the room in natural light, with the furniture in place.' },
+        { title: 'Your priorities', copy: 'Light, privacy, sleep, style. Even a rough ranking helps.' },
+        { title: 'A fabric or chip', copy: 'Anything the treatment should match: a pillow, a rug, a paint color.' },
+      ]}
+    />
+
+    <CtaBand title="Let in the <em>right amount of light.</em>" text="Bring your measurements and a photo, and we will help you find a place to start." />
+  </main>
+  <Footer />
+  <MobileBar />
+</Base>
+
+<style>
+  .looks {
+    display: grid;
+    gap: clamp(22px, 3vw, 40px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 720px) {
+    .looks {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .looks li:nth-child(2) {
+      margin-top: 40px;
+    }
+  }
+  .looks li {
+    display: grid;
+    gap: 8px;
+  }
+  .shot {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 999px 999px 16px 16px;
+    background: var(--cream);
+    box-shadow: 0 40px 60px -38px rgb(34 44 42 / 0.55);
+    margin-bottom: 10px;
+  }
+  .looks h3 {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 480;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .looks p {
+    color: var(--ink-soft);
+  }
+</style>

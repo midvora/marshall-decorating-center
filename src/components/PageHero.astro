@@ -1,0 +1,170 @@
+---
+import HeroDecor from './HeroDecor.astro';
+import Photo from './Photo.astro';
+import PhotoCredit from './PhotoCredit.astro';
+import type { PhotoKey } from '../data/photos';
+import { url } from '../lib/url';
+
+interface Props {
+  eyebrow: string;
+  /** May contain <em>. */
+  title: string;
+  lede: string;
+  photo: PhotoKey;
+  pos?: string;
+  /** arch: a tall arched frame. card: a tilted landscape card. */
+  shape?: 'arch' | 'card';
+  crumb?: string;
+}
+const { eyebrow, title, lede, photo, pos, shape = 'arch', crumb } = Astro.props;
+---
+
+<section class="hero phero" aria-labelledby="page-h" data-hero>
+  <HeroDecor compact />
+
+  <div class="container grid">
+    <div class="copy">
+      {
+        crumb && (
+          <nav class="crumb rise" style="--d:0" aria-label="Breadcrumb">
+            <a href={url('/')}>Home</a> <span aria-hidden="true">/</span> <span>{crumb}</span>
+          </nav>
+        )
+      }
+      <p class="eyebrow rise" style="--d:1">{eyebrow}</p>
+      <h1 id="page-h" class="display rise" style="--d:2" set:html={title} />
+      <p class="lede rise" style="--d:3">{lede}</p>
+      <div class="actions rise" style="--d:4">
+        <slot />
+      </div>
+    </div>
+
+    <div class="mwrap">
+      <figure class:list={['media', 'rise', `media--${shape}`]} style="--d:3" data-hero-photo>
+        <Photo name={photo} pos={pos} widths={[480, 720, 1000]} sizes="(min-width: 1020px) 44vw, 100vw" loading="eager" fetchpriority="high" />
+      </figure>
+      <PhotoCredit name={photo} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .phero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(28px, 4vw, 56px) clamp(48px, 7vw, 96px);
+  }
+  .grid {
+    display: grid;
+    gap: clamp(32px, 5vw, 56px);
+    align-items: center;
+  }
+  @media (min-width: 1020px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr);
+      gap: clamp(32px, 5vw, 88px);
+    }
+  }
+
+  .copy {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .mwrap {
+    min-width: 0;
+  }
+  .crumb {
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .crumb a {
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  }
+  h1 {
+    font-size: clamp(2.7rem, 1rem + 5.4vw, 5.4rem);
+  }
+  h1 :global(em) {
+    color: var(--clay-deep);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .actions:empty {
+    display: none;
+  }
+
+  .media {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    background: var(--cream);
+    box-shadow:
+      0 60px 90px -44px rgb(34 44 42 / 0.65),
+      0 0 0 1px rgb(34 44 42 / 0.08);
+  }
+  .media--arch {
+    aspect-ratio: 4 / 4.6;
+    max-width: 520px;
+    width: 100%;
+    margin-inline: auto;
+    border-radius: 999px 999px var(--radius) var(--radius);
+  }
+  .media--card {
+    aspect-ratio: 5 / 4;
+    border-radius: var(--radius);
+    transform: rotate(1.2deg);
+  }
+  .rise.media--card {
+    transform: translateY(20px) rotate(1.2deg);
+  }
+
+  .rise {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: rise 0.95s var(--ease) forwards;
+    animation-delay: calc(var(--d, 0) * 90ms + 120ms);
+  }
+  @keyframes rise {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .media--card.rise {
+    animation-name: rise-card;
+  }
+  @keyframes rise-card {
+    to {
+      opacity: 1;
+      transform: rotate(1.2deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rise {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .media--card.rise {
+      transform: rotate(1.2deg);
+    }
+  }
+  @media (max-width: 1019px) {
+    .media--card,
+    .rise.media--card {
+      transform: none;
+    }
+    .media--card.rise {
+      animation-name: rise;
+    }
+  }
+</style>

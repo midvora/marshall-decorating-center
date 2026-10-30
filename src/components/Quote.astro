@@ -1,0 +1,78 @@
+---
+/** A big pull quote on the dark band. Always attribute it. */
+interface Props {
+  who: string;
+  role?: string;
+}
+const { who, role } = Astro.props;
+---
+
+<section class="quote band band--pine on-dark" aria-label="A word from the store">
+  <div class="bg" aria-hidden="true"><span class="arch"></span></div>
+  <div class="container">
+    <figure data-reveal>
+      <span class="mark" aria-hidden="true">“</span>
+      <blockquote class="display"><slot /></blockquote>
+      <figcaption>
+        <strong>{who}</strong>
+        {role && <span>{role}</span>}
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .quote {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+  }
+  .bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .arch {
+    position: absolute;
+    right: -4%;
+    top: -30%;
+    width: min(50vw, 620px);
+    aspect-ratio: 0.7;
+    border: 1.5px solid rgb(247 244 238 / 0.12);
+    border-radius: 999px 999px 0 0;
+  }
+  figure {
+    position: relative;
+    max-width: 960px;
+    margin: 0;
+  }
+  .mark {
+    display: block;
+    height: 0.6em;
+    font-family: var(--f-display);
+    font-size: clamp(5rem, 12vw, 9rem);
+    line-height: 1;
+    color: var(--wheat);
+  }
+  blockquote {
+    margin: 0;
+    font-size: clamp(1.9rem, 1rem + 3.2vw, 3.6rem);
+    font-weight: 400;
+    line-height: 1.12;
+  }
+  figcaption {
+    display: grid;
+    gap: 2px;
+    margin-top: 28px;
+    color: #d6ddd8;
+  }
+  figcaption strong {
+    font-family: var(--f-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--wheat);
+  }
+</style>

@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import { photos, type PhotoKey } from '../data/photos';
+
+interface Props {
+  name: PhotoKey;
+  /** Widths to generate. Never larger than the source file. */
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  /** Overrides the photo's default object-position, e.g. "50% 20%". */
+  pos?: string;
+  alt?: string;
+  class?: string;
+}
+
+const { name, widths = [480, 800, 1200], sizes = '100vw', loading = 'lazy', fetchpriority, pos, alt, class: cls } = Astro.props;
+const photo = photos[name];
+const usable = widths.filter((w) => w <= photo.src.width);
+const finalWidths = usable.length ? usable : [photo.src.width];
+---
+
+<Image
+  src={photo.src}
+  alt={alt ?? photo.alt}
+  widths={finalWidths}
+  sizes={sizes}
+  loading={loading}
+  fetchpriority={fetchpriority}
+  decoding="async"
+  format="webp"
+  quality={80}
+  class:list={['ph-img', cls]}
+  style={`object-position:${pos ?? ('pos' in photo ? photo.pos : undefined) ?? '50% 50%'}`}
+/>
+{'stock' in photo && photo.stock && <span class="stock-tag">Sample photo</span>}

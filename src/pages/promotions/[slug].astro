@@ -1,0 +1,194 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import Photo from '../../components/Photo.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Footer from '../../components/Footer.astro';
+import MobileBar from '../../components/MobileBar.astro';
+import { promos } from '../../data/promos';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return promos.map((promo) => ({ params: { slug: promo.slug }, props: { promo } }));
+}
+
+const { promo } = Astro.props;
+const statusLabel = { current: 'This week', upcoming: 'Coming next', past: 'Past promotion' } as const;
+
+const words = promo.headline.split(' ');
+const title = `${words.slice(0, -2).join(' ')} <em>${words.slice(-2).join(' ')}</em>`;
+const more = promos.filter((p) => p.slug !== promo.slug);
+---
+
+<Base
+  title={`${promo.name} | Marshall Decorating Center (unofficial concept by Midvora)`}
+  description={`${promo.summary} A promotion at Marshall Decorating Center in Marshall, Minnesota.`}
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <PageHero
+      crumb={promo.name}
+      eyebrow={`${statusLabel[promo.status]} · ${promo.dates}`}
+      title={title}
+      lede={promo.summary}
+      photo={promo.cover}
+      shape="card"
+    >
+      <a class="btn" href={url('/shop/')}>Shop the store <span class="arr" aria-hidden="true">→</span></a>
+      <a class="btn btn--ghost" href={url('/promotions/')}>All promotions</a>
+    </PageHero>
+
+    <section class="band band--cream" aria-labelledby="items-h">
+      <div class="container">
+        <SectionHead id="items-h" eyebrow="On the floor" title={`What is in <em>${promo.name}.</em>`} />
+        <ul class:list={['items', { one: promo.items.length === 1 }]}>
+          {
+            promo.items.map((it) => (
+              <li data-rise>
+                <div class="photo">
+                  <Photo name={it.photo} widths={[360, 540, 800]} sizes="(min-width: 900px) 30vw, 90vw" />
+                </div>
+                <p class="tag">{it.tag}</p>
+                <h3>{it.title}</h3>
+                <p class="copy">{it.copy}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="band" aria-label="About this promotion">
+      <div class="container prose">
+        {promo.body.map((p) => <p data-reveal>{p}</p>)}
+      </div>
+    </section>
+
+    <section class="band band--pine on-dark more" aria-labelledby="more-h">
+      <div class="container">
+        <SectionHead id="more-h" eyebrow="Keep browsing" title="More from <em>the floor.</em>" tone="dark" />
+        <ul class="links">
+          {
+            more.map((p) => (
+              <li data-rise>
+                <a href={url(`/promotions/${p.slug}/`)}>
+                  <span class="s">{statusLabel[p.status]} · {p.dates}</span>
+                  <span class="n">{p.name}</span>
+                  <span class="arr" aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <CtaBand title="Come see <em>it in person.</em>" text="Displays change quickly. Stop in and see what is on the floor this week." />
+  </main>
+  <Footer />
+  <MobileBar />
+</Base>
+
+<style>
+  .items {
+    display: grid;
+    gap: clamp(22px, 3vw, 40px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 720px) {
+    .items {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .items.one {
+      grid-template-columns: minmax(0, 520px);
+    }
+  }
+  .items li {
+    display: grid;
+    gap: 6px;
+  }
+  .photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border-radius: 999px 999px 16px 16px;
+    background: var(--cream);
+    box-shadow: 0 40px 60px -38px rgb(34 44 42 / 0.55);
+  }
+  .tag {
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--clay-deep);
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 480;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .copy {
+    color: var(--ink-soft);
+  }
+
+  .prose {
+    display: grid;
+    gap: 18px;
+    max-width: 44em;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+  }
+
+  .links {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid rgb(247 244 238 / 0.2);
+  }
+  .links a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 16px;
+    padding: 22px 4px;
+    border-bottom: 1px solid rgb(247 244 238 / 0.2);
+    text-decoration: none;
+    transition: padding 0.4s var(--ease), background 0.4s var(--ease);
+  }
+  .links a:hover {
+    padding-inline: 18px;
+    background: rgb(247 244 238 / 0.05);
+  }
+  .s {
+    grid-column: 1;
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--wheat);
+  }
+  .n {
+    grid-column: 1;
+    font-family: var(--f-display);
+    font-variation-settings: 'opsz' 72;
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
+    letter-spacing: -0.02em;
+  }
+  .links .arr {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-size: 1.6rem;
+  }
+</style>

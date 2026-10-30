@@ -1,0 +1,161 @@
+---
+import Photo from './Photo.astro';
+import type { PhotoKey } from '../data/photos';
+
+/** Photo on one side, words on the other. Body copy goes in the default slot, actions in "actions". */
+interface Props {
+  eyebrow: string;
+  /** May contain <em>. */
+  title: string;
+  photo: PhotoKey;
+  pos?: string;
+  id?: string;
+  reverse?: boolean;
+  shape?: 'arch' | 'card' | 'plain';
+  tone?: 'light' | 'cream';
+  /** A second, smaller photo that overlaps the first. */
+  photo2?: PhotoKey;
+  pos2?: string;
+}
+const { eyebrow, title, photo, pos, id, reverse = false, shape = 'card', tone = 'light', photo2, pos2 } = Astro.props;
+const hid = id ? `${id}-h` : undefined;
+---
+
+<section class:list={['band', 'split', { 'band--cream': tone === 'cream' }]} id={id} aria-labelledby={hid}>
+  <div class:list={['container', 'grid', { rev: reverse }]}>
+    <div class:list={['media', `media--${shape}`]} data-reveal>
+      <div class="frame">
+        <Photo name={photo} pos={pos} widths={[480, 720, 1000]} sizes="(min-width: 900px) 46vw, 100vw" />
+      </div>
+      {
+        photo2 && (
+          <div class="inset">
+            <Photo name={photo2} pos={pos2} widths={[240, 360]} sizes="200px" />
+          </div>
+        )
+      }
+    </div>
+
+    <div class="copy">
+      <p class="eyebrow" data-reveal>{eyebrow}</p>
+      <h2 id={hid} class="display" data-split set:html={title} />
+      <div class="body" data-reveal><slot /></div>
+      <div class="actions" data-reveal><slot name="actions" /></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: clamp(36px, 6vw, 80px);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(48px, 7vw, 110px);
+    }
+    .rev .media {
+      order: 2;
+    }
+  }
+
+  .media {
+    position: relative;
+  }
+  .frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--cream);
+    box-shadow:
+      0 50px 80px -44px rgb(34 44 42 / 0.6),
+      0 0 0 1px rgb(34 44 42 / 0.08);
+  }
+  .media--card .frame {
+    aspect-ratio: 5 / 4;
+    border-radius: var(--radius);
+  }
+  .media--arch .frame {
+    aspect-ratio: 4 / 5;
+    max-width: 480px;
+    margin-inline: auto;
+    border-radius: 999px 999px var(--radius) var(--radius);
+  }
+  .media--plain .frame {
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+  }
+  .inset {
+    position: absolute;
+    right: clamp(-8px, -1vw, 0px);
+    bottom: -26px;
+    width: clamp(110px, 16vw, 170px);
+    aspect-ratio: 4 / 5;
+    padding: 6px;
+    border-radius: 14px;
+    background: var(--paper);
+    box-shadow: 0 26px 40px -20px rgb(34 44 42 / 0.55);
+    transform: rotate(4deg);
+    overflow: hidden;
+  }
+  .inset :global(img) {
+    border-radius: 9px;
+  }
+
+  .copy {
+    display: grid;
+    gap: 22px;
+    justify-items: start;
+  }
+  h2 {
+    font-size: clamp(2.2rem, 1rem + 4.2vw, 4.2rem);
+    max-width: 11em;
+  }
+  h2 :global(em) {
+    color: var(--clay-deep);
+  }
+  .body {
+    display: grid;
+    gap: 16px;
+    max-width: 34em;
+    color: var(--ink-soft);
+    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+  .body :global(a) {
+    color: var(--clay-deep);
+    font-weight: 600;
+  }
+  .body :global(ul) {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .body :global(ul li) {
+    position: relative;
+    padding-left: 24px;
+  }
+  .body :global(ul li)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 12px;
+    height: 7px;
+    border-left: 2.5px solid var(--sage-deep);
+    border-bottom: 2.5px solid var(--sage-deep);
+    transform: rotate(-45deg) scale(0.8);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .actions:empty {
+    display: none;
+  }
+</style>

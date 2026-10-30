@@ -1,0 +1,54 @@
+---
+import { site } from '../data/site';
+
+/** A round "family owned since" stamp, like the lid of a paint can. */
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+const text = `FAMILY OWNED • MAIN STREET • SINCE ${site.founded} • `;
+---
+
+<div class:list={['stamp', cls]} role="img" aria-label={`Family owned on Main Street since ${site.founded}`}>
+  <svg viewBox="0 0 200 200" aria-hidden="true">
+    <defs>
+      <path id="stamp-ring" d="M100 100 m-74 0 a74 74 0 1 1 148 0 a74 74 0 1 1 -148 0" />
+    </defs>
+    <circle cx="100" cy="100" r="96" fill="#ddb968" />
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#222c2a" stroke-width="1.5" stroke-opacity="0.55" />
+    <circle cx="100" cy="100" r="52" fill="#f7f4ee" />
+    <g class="ring">
+      <text font-family="DM Mono, monospace" font-size="13" font-weight="500" letter-spacing="2.6" fill="#222c2a">
+        <textPath href="#stamp-ring" startOffset="0">{text}</textPath>
+      </text>
+    </g>
+    <text x="100" y="94" text-anchor="middle" font-family="DM Mono, monospace" font-size="11" letter-spacing="3" fill="#8a4e39">SINCE</text>
+    <text x="100" y="124" text-anchor="middle" font-family="Fraunces Variable, Georgia, serif" font-size="34" font-weight="560" fill="#222c2a">{site.founded}</text>
+  </svg>
+</div>
+
+<style>
+  .stamp {
+    width: clamp(96px, 11vw, 138px);
+    aspect-ratio: 1;
+    filter: drop-shadow(0 14px 18px rgb(34 44 42 / 0.28));
+  }
+  .stamp svg {
+    width: 100%;
+    height: 100%;
+  }
+  .ring {
+    transform-origin: 100px 100px;
+    animation: spin 46s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ring {
+      animation: none;
+    }
+  }
+</style>
